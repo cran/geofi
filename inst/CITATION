@@ -1,0 +1,21 @@
+citHeader("Kindly cite the geofi R package as follows:")
+
+citEntry(entry="misc",
+         title = "geofi: Access Finnish Geospatial Data",
+         author = personList(
+           person(given ="Markus", family="Kainu", email = "markus.kainu@kapsi.fi"),
+           person(given ="Joona", family="Lehtomaki"),	   
+           person(given ="Juuso", family="Parkkinen"),
+           person(given ="Jani", family="Miettinen"),
+           person(given ="Pyry", family="Kantanen"),
+	   person(given ="Leo", family="Lahti")
+         ),
+	 journal = "",
+	 year = "2015-2021",
+         textVersion =
+         paste("(C) Markus Kainu, Joona Lehtomaki, Juuso Parkkinen, Jani Miettinen, Pyry Kantanen, Leo Lahti 2015-2021.",
+               "geofi: Access Finnish Geospatial Data",
+               sep=" ")
+         )
+
+citFooter("\nMany thanks for all contributors! For more info, see: https://github.com/rOpenGov/geofi")
