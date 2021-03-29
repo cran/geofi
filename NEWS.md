@@ -1,3 +1,9 @@
+## CHANGES IN VERSION 1.0.1 (2021-03-29)
+
++ duplicated municipalities removed from municipality keys from year 2016
++ tricolore_tutorial.Rmd vignette now provides a proper method for producing the final map
+
+
 ## CHANGES IN VERSION 1.0.0 (2021-02-18)
 
 + first CRAN release
