@@ -32,13 +32,15 @@ px_raw <-
             query = pxweb_query_list)
 
 library(dplyr)
+library(tidyr)
 library(janitor)
 library(sf)
 px_data <- as_tibble(
   as.data.frame(px_raw, 
                 column.name.type = "text", 
                 variable.value.type = "text")
-  ) %>% setNames(make_clean_names(names(.)))
+  ) %>% setNames(make_clean_names(names(.))) %>% 
+  pivot_longer(names_to = "information", values_to = "municipal_key_figures", 3:ncol(.))
 px_data
 
 ## ----municipality_map2--------------------------------------------------------
@@ -50,7 +52,7 @@ map_data <- right_join(muni, px_data, by = c("municipality_name_fi" = "region_20
 ## ---- fig.width = 10, fig.height = 7------------------------------------------
 library(ggplot2)
 map_data %>% 
-  filter(grepl('Share of Swedish-speakers of the population|Share of foreign citizens of the population', information)) %>% 
+  filter(grepl("swedish|foreign", information)) %>% 
   ggplot(aes(fill = municipal_key_figures)) + 
   geom_sf() + 
   facet_wrap(~information) +

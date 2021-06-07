@@ -27,7 +27,8 @@ px_data <- pxweb_get(url = "https://pxnet2.stat.fi/PXWeb/api/v1/fi/Kuntien_avain
 # Convert to data.frame and wrangle dataset so that every row is municipality
 tk_data <- as.data.frame(px_data, 
                          column.name.type = "text", 
-                         variable.value.type = "text")
+                         variable.value.type = "text") %>% 
+  pivot_longer(names_to = "Tiedot", values_to = "Kuntien avainluvut", 3:6)
 tk_data <- tk_data %>% 
   rename(name = `Alue 2019`) %>%
   mutate(name = as.character(name),
@@ -52,9 +53,9 @@ finland_popu2017 <- left_join(dat, municipality_key_2017, by = c("name" = "munic
 
 ## ----add_tricolore, eval = TRUE-----------------------------------------------
 tric_dat <- Tricolore(finland_popu2017,
-                      p1 = 'over64',
+                      p1 = 'under_15', 
                       p2 = 'y16_64', 
-                      p3 = 'under_15', 
+                      p3 = 'over64',
                       center = NA,
                       crop = TRUE
                       )
@@ -68,9 +69,9 @@ plot_pop
 
 ## ----edit_tricolore-----------------------------------------------------------
 tric_dat <- Tricolore(finland_popu2017,
-                      p1 = 'over64',
+                      p1 = 'under_15', 
                       p2 = 'y16_64', 
-                      p3 = 'under_15', 
+                      p3 = 'over64',
                       center = NA,
                       crop = TRUE,
                       spread = 3,
