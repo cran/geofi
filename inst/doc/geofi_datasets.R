@@ -16,6 +16,13 @@ knitr::opts_chunk$set(
 #  # Install development version from GitHub
 #  remotes::install_github("ropengov/geofi")
 
+## -----------------------------------------------------------------------------
+# Let's first create a function that checks if the suggested 
+# packages are available
+check_namespaces <- function(pkgs){
+  return(all(unlist(sapply(pkgs, requireNamespace,quietly = TRUE))))
+}
+
 ## ----municipality_keys--------------------------------------------------------
 library(geofi)
 library(dplyr)
@@ -58,38 +65,43 @@ as_tibble(d$results) %>%
   print(n = 100)
 
 ## ----geofacet, fig.height = 8, fig.width = 10---------------------------------
-library(pxweb)
-# Let pull population data from Statistics Finland
-pxweb_query_list <- 
-  list("Alue 2019"=c("*"),
-       "Tiedot"=c("M411"),
-       "Vuosi"=c("*"))
-
-# Download data 
-px_data <- 
-  pxweb_get(url = "https://pxnet2.stat.fi/PXWeb/api/v1/fi/Kuntien_avainluvut/2019/kuntien_avainluvut_2019_aikasarja.px",
-            query = pxweb_query_list)
-
-# Convert to data.frame 
-px_data <- as.data.frame(px_data, column.name.type = "text", variable.value.type = "text")
-names(px_data) <- c("kunta_name","year","value")
-
-# lets aggregate population data
-dat <- left_join(geofi::municipality_key_2021 %>% select(-year),
-                 px_data) %>% 
-  group_by(maakunta_code, maakunta_name_fi,year) %>% 
-  summarise(population = sum(value, na.rm = TRUE)) %>% 
-  na.omit() %>% 
-  ungroup() %>% 
-  rename(code = maakunta_code, name = maakunta_name_fi)
-
-library(geofacet)
-library(ggplot2)
-
-ggplot(dat, aes(x = year, y = population/1000, group = name)) + 
-  geom_line() + 
-  facet_geo(facets = ~name, grid = grid_maakunta, scales = "free_y") +
-  theme(axis.text.x = element_text(size = 6)) +
-  scale_x_discrete(breaks = seq.int(from = 1987, to = 2018, by = 5)) +
-  labs(title = "Population 1987-2018", y = "population (1000)")
+libs <- c("pxweb","geofacet","ggplot2")
+if (check_namespaces(pkgs = libs)) {
+  library(pxweb)
+  # Let pull population data from Statistics Finland
+  pxweb_query_list <- 
+    list("Alue 2019"=c("*"),
+         "Tiedot"=c("M411"),
+         "Vuosi"=c("*"))
+  
+  # Download data 
+  px_data <- 
+    pxweb_get(url = "https://pxnet2.stat.fi/PXWeb/api/v1/fi/Kuntien_avainluvut/2019/kuntien_avainluvut_2019_aikasarja.px",
+              query = pxweb_query_list)
+  
+  # Convert to data.frame 
+  px_data <- as.data.frame(px_data, column.name.type = "text", variable.value.type = "text")
+  names(px_data) <- c("kunta_name","year","value")
+  
+  # lets aggregate population data
+  dat <- left_join(geofi::municipality_key_2021 %>% select(-year),
+                   px_data) %>% 
+    group_by(maakunta_code, maakunta_name_fi,year) %>% 
+    summarise(population = sum(value, na.rm = TRUE)) %>% 
+    na.omit() %>% 
+    ungroup() %>% 
+    rename(code = maakunta_code, name = maakunta_name_fi)
+  
+  library(geofacet)
+  library(ggplot2)
+  
+  ggplot(dat, aes(x = year, y = population/1000, group = name)) + 
+    geom_line() + 
+    facet_geo(facets = ~name, grid = grid_maakunta, scales = "free_y") +
+    theme(axis.text.x = element_text(size = 6)) +
+    scale_x_discrete(breaks = seq.int(from = 1987, to = 2018, by = 5)) +
+    labs(title = "Population 1987-2018", y = "population (1000)")
+} else {
+  message("'pxweb' not available")
+}
 

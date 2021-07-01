@@ -16,6 +16,13 @@ knitr::opts_chunk$set(
 #  # Install development version from GitHub
 #  remotes::install_github("ropengov/geofi")
 
+## -----------------------------------------------------------------------------
+# Let's first create a function that checks if the suggested 
+# packages are available
+check_namespaces <- function(pkgs){
+  return(all(unlist(sapply(pkgs, requireNamespace,quietly = TRUE))))
+}
+
 ## ----municipality_map, fig.width = 5------------------------------------------
 library(geofi)
 polygon <- get_municipalities(year = 2021, scale = 4500)
@@ -31,19 +38,20 @@ plot(polygon["municipality_code"], add = TRUE, border="white")
 plot(st_geometry(point["municipality_code"]), add = TRUE, color = "black")
 
 ## ----gg, fig.width = 5--------------------------------------------------------
+libs <- c("ggplot2")
+if (check_namespaces(pkgs = libs)) {
 library(ggplot2)
 ggplot() + 
   geom_sf(data = polygon, aes(fill = municipality_code)) +
   geom_sf(data = point)
-
-## ----tmap, fig.width = 5------------------------------------------------------
-library(tmap)
-tm_shape(polygon) +
-  tm_polygons("municipality_code") +
-  tm_shape(point) +
-    tm_symbols(col = "black", scale = .5) 
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## ----uusimaa, fig.width=8, fig.height=4---------------------------------------
+libs <- c("ggplot2")
+if (check_namespaces(pkgs = libs)) {
 library(dplyr)
 polygon_uusimaa <- polygon %>% filter(maakunta_name_fi %in% "Uusimaa")
 point_uusimaa <- point %>% filter(municipality_code %in% polygon_uusimaa$municipality_code)
@@ -52,8 +60,14 @@ ggplot() +
   geom_sf(data = polygon_uusimaa, alpha = .3) + 
   geom_sf(data = point_uusimaa) + 
   geom_sf_text(data = point_uusimaa, aes(label = teksti))
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## ----uusimaa_repel, fig.width=8, fig.height=4---------------------------------
+libs <- c("ggplot2")
+if (check_namespaces(pkgs = libs)) {
 ggplot() + 
   theme_light() +
   geom_sf(data = polygon_uusimaa, alpha = .3) + 
@@ -64,6 +78,10 @@ ggplot() +
                                     sf::st_centroid() %>% 
                                     sf::st_coordinates() %>% as_tibble()),
                      aes(label = teksti, x = X, y = Y))
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## -----------------------------------------------------------------------------
 pop_data <- bind_rows(
@@ -83,12 +101,20 @@ pop_data
 ## ----facet,  fig.height=7-----------------------------------------------------
 pop_map <- right_join(polygon, pop_data)
 
+libs <- c("ggplot2")
+if (check_namespaces(pkgs = libs)) {
 ggplot(pop_map, 
        aes(fill = population)) +
   geom_sf() +
   facet_grid(~time)
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## ----patchwork, fig.width = 8, fig.height=10----------------------------------
+libs <- c("ggplot2","patchwork")
+if (check_namespaces(pkgs = libs)) {
 library(patchwork)
 p_municipalities <- ggplot(polygon, aes(fill = municipality_code)) + 
   geom_sf() + 
@@ -103,8 +129,14 @@ p_uusimaa <- ggplot(polygon_uusimaa, aes(fill = municipality_code)) +
 (p_municipalities | p_regions) /
 p_uusimaa + plot_layout(nrow = 2, heights = c(1,0.6)) +
   plot_annotation(title = "Combining multiple maps into a single (gg)plot")
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## ---- fig.height = 5----------------------------------------------------------
+libs <- c("ggplot2")
+if (check_namespaces(pkgs = libs)) {
 ggplot(polygon_uusimaa, aes(fill = municipality_code)) +
   geom_sf(color = alpha("white", 1/3)) +
   scale_fill_fermenter(palette = "YlGnBu") +
@@ -116,8 +148,14 @@ ggplot(polygon_uusimaa, aes(fill = municipality_code)) +
         ) +
   labs(title = "Municipality code", 
        fill = NULL)
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## ----leaflet, out.width="90%"-------------------------------------------------
+libs <- c("leaflet")
+if (check_namespaces(pkgs = libs)) {
 polygon_wgs84 <- sf::st_transform(x = polygon, crs = "+proj=longlat +datum=WGS84")
 point_wgs84 <- sf::st_transform(x = point, crs = "+proj=longlat +datum=WGS84")
 
@@ -162,6 +200,8 @@ leaflet(polygon_wgs84) %>%
                                                        padding = "2px 4px"),
                                           textsize = "12px",
                                           direction = "auto"))
-
-
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 

@@ -17,10 +17,19 @@ knitr::opts_chunk$set(
 #  # Install development version from GitHub
 #  remotes::install_github("ropengov/geofi")
 
+## -----------------------------------------------------------------------------
+# Let's first create a function that checks if the suggested 
+# packages are available
+check_namespaces <- function(pkgs){
+  return(all(unlist(sapply(pkgs, requireNamespace,quietly = TRUE))))
+}
+
 ## ----municipality_map---------------------------------------------------------
 library(geofi)
 muni <- get_municipalities(year = 2019)
 
+libs <- c("pxweb","dplyr","tidyr","janitor","ggplot2")
+if (check_namespaces(pkgs = libs)) {
 library(pxweb)
 pxweb_query_list <-
   list("Alue 2020"=c("*"),
@@ -42,14 +51,31 @@ px_data <- as_tibble(
   ) %>% setNames(make_clean_names(names(.))) %>% 
   pivot_longer(names_to = "information", values_to = "municipal_key_figures", 3:ncol(.))
 px_data
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## ----municipality_map2--------------------------------------------------------
+if (check_namespaces(pkgs = libs)) {
 count(px_data, region_2020)
+  } else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## -----------------------------------------------------------------------------
-map_data <- right_join(muni, px_data, by = c("municipality_name_fi" = "region_2020"))
+if (check_namespaces(pkgs = libs)) {
+map_data <- right_join(muni, 
+                       px_data, 
+                       by = c("municipality_name_fi" = "region_2020"))
+  } else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## ---- fig.width = 10, fig.height = 7------------------------------------------
+if (check_namespaces(pkgs = libs)) {
 library(ggplot2)
 map_data %>% 
   filter(grepl("swedish|foreign", information)) %>% 
@@ -57,6 +83,10 @@ map_data %>%
   geom_sf() + 
   facet_wrap(~information) +
   theme(legend.position = "top")
+  } else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## -----------------------------------------------------------------------------
 if (FALSE){
@@ -113,6 +143,8 @@ muni %>%
   count(sairaanhoitop_name_en)
 
 ## -----------------------------------------------------------------------------
+libs <- c("ggplot2")
+if (check_namespaces(pkgs = libs)) {
 muni %>% 
   count(sairaanhoitop_name_en) %>% 
   left_join(xdf, by = c("sairaanhoitop_name_en" = "shp")) %>% 
@@ -122,8 +154,14 @@ muni %>%
                color = "white") +
   labs(title = "Number of total COVID-19 cases reported since January 2020", 
        fill = NULL)
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## ----zipcode_with_statistics_finland------------------------------------------
+libs <- c("ggplot2","pxweb","janitor")
+if (check_namespaces(pkgs = libs)) {
 library(pxweb)
 # lets get all zipcodes and all variables
 pxweb_query_list <- 
@@ -142,8 +180,14 @@ px_data <- as_tibble(
   ) %>% setNames(make_clean_names(names(.)))
 px_data %>% 
   filter(postal_code_area != "Finland")
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
 ## -----------------------------------------------------------------------------
+libs <- c("ggplot2","pxweb","janitor")
+if (check_namespaces(pkgs = libs)) {
 px_data$posti_alue <- sub(" .+$", "", px_data$postal_code_area)
 
 # Lets join with spatial data and plot the area of each zipcode
@@ -155,4 +199,8 @@ ggplot(zipcodes_map) +
           color  = alpha("white", 1/3)) +
   labs(title = "Average age of inhabitants, 2017 (HE)", 
        fill = NULL)
+} else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
 
