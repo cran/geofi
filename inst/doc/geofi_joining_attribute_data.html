@@ -12,7 +12,7 @@
 
 <meta name="author" content="Markus Kainu" />
 
-<meta name="date" content="2021-06-30" />
+<meta name="date" content="2021-08-18" />
 
 <title>Joining attribute data with geofi data</title>
 
@@ -141,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Joining attribute data with geofi data</h1>
 <h4 class="author">Markus Kainu</h4>
-<h4 class="date">2021-06-30</h4>
+<h4 class="date">2021-08-18</h4>
 
 
 
@@ -194,7 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;One or more of the following packages is not available: &quot;</span>, </span>
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>          <span class="fu">paste</span>(libs, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 12,800 x 4</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 12,800 × 4</span></span>
 <span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    region_2020   year  information                            municipal_key_fig…</span></span>
 <span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;                                               &lt;dbl&gt;</span></span>
 <span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 WHOLE COUNTRY 2019  degree_of_urbanisation_percent                       86.4</span></span>
@@ -215,7 +215,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;One or more of the following packages is not available: &quot;</span>, </span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>          <span class="fu">paste</span>(libs, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 400 x 2</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 400 × 2</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    region_2020              n</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                &lt;int&gt;</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 Akaa                    32</span></span>
@@ -304,7 +304,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>xdf <span class="sc">%&gt;%</span> </span>
 <span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(shp)</span>
-<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 22 x 2</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 22 × 2</span></span>
 <span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    shp                                        n</span></span>
 <span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                                  &lt;int&gt;</span></span>
 <span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 All areas                                  1</span></span>
@@ -390,19 +390,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;One or more of the following packages is not available: &quot;</span>, </span>
 <span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>          <span class="fu">paste</span>(libs, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
 <span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 72,624 x 3</span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    postal_code_area               data                paavo_open_data_by_postal…</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                          &lt;chr&gt;                                    &lt;dbl&gt;</span></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 00100 Helsinki Keskusta - Etu… Inhabitants, total…                      18284</span></span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 00100 Helsinki Keskusta - Etu… Females, 2017 (HE)                        9613</span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 00100 Helsinki Keskusta - Etu… Males, 2017 (HE)                          8671</span></span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 00100 Helsinki Keskusta - Etu… Average age of inh…                         41</span></span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 00100 Helsinki Keskusta - Etu… 0-2 years, 2017 (H…                        434</span></span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 00100 Helsinki Keskusta - Etu… 3-6 years, 2017 (H…                        521</span></span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 00100 Helsinki Keskusta - Etu… 7-12 years, 2017 (…                        711</span></span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 00100 Helsinki Keskusta - Etu… 13-15 years, 2017 …                        274</span></span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 00100 Helsinki Keskusta - Etu… 16-17 years, 2017 …                        185</span></span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 00100 Helsinki Keskusta - Etu… 18-19 years, 2017 …                        264</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 72,624 × 3</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    postal_code_area                                data      paavo_open_data_by…</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                                           &lt;chr&gt;                   &lt;dbl&gt;</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki Inhabita…               18284</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki Females,…                9613</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki Males, 2…                8671</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki Average …                  41</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki 0-2 year…                 434</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki 3-6 year…                 521</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki 7-12 yea…                 711</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki 13-15 ye…                 274</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki 16-17 ye…                 185</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 00100 Helsinki Keskusta - Etu-Töölö   (Helsinki 18-19 ye…                 264</span></span>
 <span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 72,614 more rows</span></span></code></pre></div>
 <p>Before we can join the data, we must extract the numerical postal code from <code>postal_code_area</code>-variable.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>libs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ggplot2&quot;</span>,<span class="st">&quot;pxweb&quot;</span>,<span class="st">&quot;janitor&quot;</span>)</span>

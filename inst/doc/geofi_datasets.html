@@ -12,7 +12,7 @@
 
 <meta name="author" content="Markus Kainu, Leo Lahti &amp; Joona Lehtomäki" />
 
-<meta name="date" content="2021-06-30" />
+<meta name="date" content="2021-08-18" />
 
 <title>Datasets in geofi-package</title>
 
@@ -141,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Datasets in geofi-package</h1>
 <h4 class="author">Markus Kainu, Leo Lahti &amp; Joona Lehtomäki</h4>
-<h4 class="date">2021-06-30</h4>
+<h4 class="date">2021-08-18</h4>
 
 
 
@@ -169,7 +169,7 @@ Each municipality belongs to a higher level regional classifications such as reg
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">as_tibble</span>(d<span class="sc">$</span>results) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Item,Title) <span class="sc">%&gt;%</span> </span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">&quot;municipality_key&quot;</span>, Item))</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 x 2</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 2</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Item                  Title                                                </span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                 &lt;chr&gt;                                                </span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 municipality_key      Aggregated municipality key table for years 2013-2021</span></span>
@@ -184,32 +184,45 @@ Each municipality belongs to a higher level regional classifications such as reg
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 municipality_key_2021 Municipality key table for 2021</span></span></code></pre></div>
 <p>Looking at the names of `municipality_key_2021` there is 63 different variables from each municipality.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(geofi<span class="sc">::</span>municipality_key_2020)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;kunta&quot;                  &quot;municipality_name_fi&quot;   &quot;municipality_name_sv&quot;  </span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;municipality_name_en&quot;   &quot;kuntaryhmitys_code&quot;     &quot;kuntaryhmitys_name_fi&quot; </span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;kuntaryhmitys_name_sv&quot;  &quot;kuntaryhmitys_name_en&quot;  &quot;avi_code&quot;              </span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10] &quot;avi_name_fi&quot;            &quot;avi_name_sv&quot;            &quot;avi_name_en&quot;           </span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;ely_code&quot;               &quot;ely_name_fi&quot;            &quot;ely_name_sv&quot;           </span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [16] &quot;ely_name_en&quot;            &quot;maakunta_code&quot;          &quot;maakunta_name_fi&quot;      </span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [19] &quot;maakunta_name_sv&quot;       &quot;maakunta_name_en&quot;       &quot;kielisuhde_code&quot;       </span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [22] &quot;kielisuhde_name_fi&quot;     &quot;kielisuhde_name_sv&quot;     &quot;kielisuhde_name_en&quot;    </span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [25] &quot;seutukunta_code&quot;        &quot;seutukunta_name_fi&quot;     &quot;seutukunta_name_sv&quot;    </span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [28] &quot;seutukunta_name_en&quot;     &quot;year&quot;                   &quot;suuralue_code&quot;         </span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [31] &quot;suuralue_name_fi&quot;       &quot;suuralue_name_sv&quot;       &quot;suuralue_name_en&quot;      </span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [34] &quot;sairaanhoitop_code&quot;     &quot;sairaanhoitop_name_fi&quot;  &quot;sairaanhoitop_name_sv&quot; </span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [37] &quot;sairaanhoitop_name_en&quot;  &quot;nuts1_code&quot;             &quot;nuts1_name_fi&quot;         </span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [40] &quot;nuts1_name_sv&quot;          &quot;nuts1_name_en&quot;          &quot;nuts2_code&quot;            </span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [43] &quot;nuts2_name_fi&quot;          &quot;nuts2_name_sv&quot;          &quot;nuts2_name_en&quot;         </span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [46] &quot;nuts3_code&quot;             &quot;nuts3_name_fi&quot;          &quot;nuts3_name_sv&quot;         </span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [49] &quot;nuts3_name_en&quot;          &quot;tyossakayntial_code&quot;    &quot;tyossakayntial_name_fi&quot;</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [52] &quot;vaalipiiri_code&quot;        &quot;vaalipiiri_name_fi&quot;     &quot;vaalipiiri_name_sv&quot;    </span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [55] &quot;vaalipiiri_name_en&quot;     &quot;municipality_code&quot;      &quot;kunta_name&quot;            </span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [58] &quot;name_fi&quot;                &quot;name_sv&quot;                &quot;erva_code&quot;             </span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [61] &quot;erva_name_fi&quot;           &quot;erva_name_sv&quot;           &quot;erva_name_en&quot;</span></span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;kunta&quot;                   &quot;municipality_name_fi&quot;   </span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;municipality_name_sv&quot;    &quot;municipality_name_en&quot;   </span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;kuntaryhmitys_code&quot;      &quot;kuntaryhmitys_name_fi&quot;  </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;kuntaryhmitys_name_sv&quot;   &quot;kuntaryhmitys_name_en&quot;  </span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;avi_code&quot;                &quot;avi_name_fi&quot;            </span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [11] &quot;avi_name_sv&quot;             &quot;avi_name_en&quot;            </span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [13] &quot;ely_code&quot;                &quot;ely_name_fi&quot;            </span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [15] &quot;ely_name_sv&quot;             &quot;ely_name_en&quot;            </span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;maakunta_code&quot;           &quot;maakunta_name_fi&quot;       </span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [19] &quot;maakunta_name_sv&quot;        &quot;maakunta_name_en&quot;       </span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [21] &quot;kielisuhde_code&quot;         &quot;kielisuhde_name_fi&quot;     </span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [23] &quot;kielisuhde_name_sv&quot;      &quot;kielisuhde_name_en&quot;     </span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [25] &quot;seutukunta_code&quot;         &quot;seutukunta_name_fi&quot;     </span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [27] &quot;seutukunta_name_sv&quot;      &quot;seutukunta_name_en&quot;     </span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [29] &quot;year&quot;                    &quot;suuralue_code&quot;          </span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [31] &quot;suuralue_name_fi&quot;        &quot;suuralue_name_sv&quot;       </span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [33] &quot;suuralue_name_en&quot;        &quot;sairaanhoitop_code&quot;     </span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [35] &quot;sairaanhoitop_name_fi&quot;   &quot;sairaanhoitop_name_sv&quot;  </span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [37] &quot;sairaanhoitop_name_en&quot;   &quot;nuts1_code&quot;             </span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [39] &quot;nuts1_name_fi&quot;           &quot;nuts1_name_sv&quot;          </span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [41] &quot;nuts1_name_en&quot;           &quot;nuts2_code&quot;             </span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [43] &quot;nuts2_name_fi&quot;           &quot;nuts2_name_sv&quot;          </span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [45] &quot;nuts2_name_en&quot;           &quot;nuts3_code&quot;             </span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [47] &quot;nuts3_name_fi&quot;           &quot;nuts3_name_sv&quot;          </span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [49] &quot;nuts3_name_en&quot;           &quot;tyossakayntial_code&quot;    </span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [51] &quot;tyossakayntial_name_fi&quot;  &quot;vaalipiiri_code&quot;        </span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [53] &quot;vaalipiiri_name_fi&quot;      &quot;vaalipiiri_name_sv&quot;     </span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [55] &quot;vaalipiiri_name_en&quot;      &quot;municipality_code&quot;      </span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [57] &quot;kunta_name&quot;              &quot;name_fi&quot;                </span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [59] &quot;name_sv&quot;                 &quot;erva_code&quot;              </span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [61] &quot;erva_name_fi&quot;            &quot;erva_name_sv&quot;           </span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [63] &quot;erva_name_en&quot;            &quot;hyvinvointialue_name_fi&quot;</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [65] &quot;hyvinvointialue_name_sv&quot; &quot;hyvinvointialue_name_en&quot;</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [67] &quot;hyvinvointialue_code&quot;</span></span></code></pre></div>
 <p>With these municipality keys you can easily aggregate municipalities for plotting or you can list different regional breakdowns.<br />
 </p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>geofi<span class="sc">::</span>municipality_key_2021 <span class="sc">%&gt;%</span> </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(maakunta_code,maakunta_name_fi,maakunta_name_sv,maakunta_name_en)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 19 x 5</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 19 × 5</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    maakunta_code maakunta_name_fi  maakunta_name_sv     maakunta_name_en       n</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            &lt;int&gt; &lt;chr&gt;             &lt;chr&gt;                &lt;chr&gt;              &lt;int&gt;</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1             1 Uusimaa           Nyland               Uusimaa               26</span></span>
@@ -286,7 +299,7 @@ Each municipality belongs to a higher level regional classifications such as reg
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Item,Title) <span class="sc">%&gt;%</span> </span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">&quot;grid&quot;</span>, Item)) <span class="sc">%&gt;%</span> </span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">100</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 21 x 2</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 21 × 2</span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Item                   Title                                                 </span></span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                  &lt;chr&gt;                                                 </span></span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 grid_ahvenanmaa        custom geofacet grid for Ahvenanmaa region            </span></span>
