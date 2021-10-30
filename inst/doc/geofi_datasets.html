@@ -12,7 +12,7 @@
 
 <meta name="author" content="Markus Kainu, Leo Lahti &amp; Joona Lehtomäki" />
 
-<meta name="date" content="2021-08-18" />
+<meta name="date" content="2021-10-30" />
 
 <title>Datasets in geofi-package</title>
 
@@ -141,7 +141,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Datasets in geofi-package</h1>
 <h4 class="author">Markus Kainu, Leo Lahti &amp; Joona Lehtomäki</h4>
-<h4 class="date">2021-08-18</h4>
+<h4 class="date">2021-10-30</h4>
 
 
 
@@ -223,27 +223,27 @@ Each municipality belongs to a higher level regional classifications such as reg
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>geofi<span class="sc">::</span>municipality_key_2021 <span class="sc">%&gt;%</span> </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(maakunta_code,maakunta_name_fi,maakunta_name_sv,maakunta_name_en)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 19 × 5</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    maakunta_code maakunta_name_fi  maakunta_name_sv     maakunta_name_en       n</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            &lt;int&gt; &lt;chr&gt;             &lt;chr&gt;                &lt;chr&gt;              &lt;int&gt;</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1             1 Uusimaa           Nyland               Uusimaa               26</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2             2 Varsinais-Suomi   Egentliga Finland    Southwest Finland     27</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3             4 Satakunta         Satakunta            Satakunta             16</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4             5 Kanta-Häme        Egentliga Tavastland Kanta-Häme            11</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5             6 Pirkanmaa         Birkaland            Pirkanmaa             23</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6             7 Päijät-Häme       Päijänne-Tavastland  Päijät-Häme           10</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7             8 Kymenlaakso       Kymmenedalen         Kymenlaakso            6</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8             9 Etelä-Karjala     Södra Karelen        South Karelia          9</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9            10 Etelä-Savo        Södra Savolax        South Savo            12</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10            11 Pohjois-Savo      Norra Savolax        North Savo            19</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11            12 Pohjois-Karjala   Norra Karelen        North Karelia         13</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12            13 Keski-Suomi       Mellersta Finland    Central Finland       22</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13            14 Etelä-Pohjanmaa   Södra Österbotten    South Ostrobothnia    18</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 14            15 Pohjanmaa         Österbotten          Ostrobothnia          14</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 15            16 Keski-Pohjanmaa   Mellersta Österbott… Central Ostroboth…     8</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 16            17 Pohjois-Pohjanmaa Norra Österbotten    North Ostrobothnia    30</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 17            18 Kainuu            Kajanaland           Kainuu                 8</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 18            19 Lappi             Lappland             Lapland               21</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 19            21 Ahvenanmaa        Åland                Åland                 16</span></span></code></pre></div>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    maakunta_code maakunta_name_fi  maakunta_name_sv      maakunta_name_en      n</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            &lt;int&gt; &lt;chr&gt;             &lt;chr&gt;                 &lt;chr&gt;             &lt;int&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1             1 Uusimaa           Nyland                Uusimaa              26</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2             2 Varsinais-Suomi   Egentliga Finland     Southwest Finland    27</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3             4 Satakunta         Satakunta             Satakunta            16</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4             5 Kanta-Häme        Egentliga Tavastland  Kanta-Häme           11</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5             6 Pirkanmaa         Birkaland             Pirkanmaa            23</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6             7 Päijät-Häme       Päijänne-Tavastland   Päijät-Häme          10</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7             8 Kymenlaakso       Kymmenedalen          Kymenlaakso           6</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8             9 Etelä-Karjala     Södra Karelen         South Karelia         9</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9            10 Etelä-Savo        Södra Savolax         South Savo           12</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10            11 Pohjois-Savo      Norra Savolax         North Savo           19</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11            12 Pohjois-Karjala   Norra Karelen         North Karelia        13</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12            13 Keski-Suomi       Mellersta Finland     Central Finland      22</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13            14 Etelä-Pohjanmaa   Södra Österbotten     South Ostrobothn…    18</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 14            15 Pohjanmaa         Österbotten           Ostrobothnia         14</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 15            16 Keski-Pohjanmaa   Mellersta Österbotten Central Ostrobot…     8</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 16            17 Pohjois-Pohjanmaa Norra Österbotten     North Ostrobothn…    30</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 17            18 Kainuu            Kajanaland            Kainuu                8</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 18            19 Lappi             Lappland              Lapland              21</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 19            21 Ahvenanmaa        Åland                 Åland                16</span></span></code></pre></div>
 <p>Municipality keys are joined with the municipality spatial data by default, meaning that data returned by <code>get_municipality()</code> can be aggregated as it is.</p>
 </div>
 <div id="spatial-data" class="section level2">
