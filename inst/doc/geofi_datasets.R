@@ -42,6 +42,27 @@ geofi::municipality_key_2021 %>%
 municipalities <- get_municipalities(year = 2020, scale = 4500)
 plot(municipalities["municipality_name_fi"], border = NA)
 
+## ----muni_pop_map1, fig.height = 7, fig.width = 4-----------------------------
+get_municipality_pop(year = 2020) %>%  
+  subset(select = miehet_p) %>% 
+  plot()
+
+## ----muni_pop_map2, fig.height = 7, fig.width = 4-----------------------------
+get_municipality_pop(year = 2020) %>%  
+  group_by(hyvinvointialue_name_fi) %>%  
+  summarise(vaesto = sum(vaesto)) %>%  
+  subset(select = vaesto) %>% 
+  plot()
+
+## ----muni_pop_map3, fig.height = 7, fig.width = 4-----------------------------
+get_municipality_pop(year = 2020) %>%  
+  dplyr::group_by(hyvinvointialue_name_fi) %>% 
+  summarise(vaesto = sum(vaesto),
+            miehet = sum(miehet)) %>% 
+  mutate(share = miehet/vaesto*100) %>% 
+  subset(select = share) %>% 
+  plot()
+
 ## ----zipcode_map, fig.height = 7, fig.width = 4-------------------------------
 zipcodes <- get_zipcodes(year = 2015) 
 plot(zipcodes["nimi"], border = NA)
