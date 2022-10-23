@@ -4,7 +4,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   message = FALSE, 
   warning = FALSE,
-  fig.height = 7, 
+  fig.height = 7,  
   fig.width = 7,
   dpi = 75
 )
@@ -232,6 +232,103 @@ ggplot(muni_voronoi) +
         panel.grid = element_blank(),
         legend.position = "none")
 } else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
+
+## -----------------------------------------------------------------------------
+kunta <- geofi::municipality_central_localities %>%  
+  select(teksti,kuntatunnus) %>%
+  mutate(kuntatunnus = as.integer(kuntatunnus)) %>%
+  select(-teksti) %>%
+  left_join(geofi::municipality_key_2022 %>% select(municipality_code, municipality_name_fi),
+            by = c("kuntatunnus" = "municipality_code")) %>%
+  rename(teksti = municipality_name_fi)
+kunta
+
+## -----------------------------------------------------------------------------
+d_list <- list()
+kuntadatan_teksti_ja_kuntatunnus <- sf::st_drop_geometry(kunta) %>%
+  select(teksti,kuntatunnus)
+for (i in 1:nrow(kunta)){
+  dist_tmp <- sf::st_distance(x = kunta[i,], y =  kunta)
+  tibble(origin_name = kunta[i,]$teksti,
+         origin_code = kunta[i,]$kuntatunnus) %>%
+    bind_cols(kuntadatan_teksti_ja_kuntatunnus %>% rename(destination_name = teksti,
+                                                          destination_code = kuntatunnus)) %>%
+    mutate(dist = dist_tmp[1,]) -> d_list[[i]]
+}
+kunta_dist <- do.call("bind_rows", d_list) %>%
+  mutate(dist = as.numeric(dist))
+head(kunta_dist)
+
+## -----------------------------------------------------------------------------
+if (check_namespaces(pkgs = libs)) {
+ggplot(kunta_dist %>%
+         filter(origin_name == "Helsinki") %>%
+         arrange(dist) %>% slice(1:20),
+       aes(x = dist, y = reorder(destination_name, dist), label = round(dist))) +
+         geom_col() + geom_text(aes(x = 1000), color = "white", hjust = 0) +
+  labs(title = "Nearest 20 municipality localities to Helsinki", x = "distance in meters")
+  } else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
+
+## -----------------------------------------------------------------------------
+# We firt need the country map as a single polygon
+geofi::get_municipalities() %>% 
+  sf::st_union() %>% 
+  # then we need to compute the centroid of that polygon
+  sf::st_centroid() -> fin_centroid
+
+# The let's find the nearest neighbour with
+distance <- st_distance(x = fin_centroid, y = kunta)
+kuntadatan_teksti_ja_kuntatunnus %>% 
+  mutate(dist = as.numeric(distance)) %>% 
+  arrange(dist) -> closest_to_center
+head(closest_to_center)
+
+## -----------------------------------------------------------------------------
+furthest20 <- kunta_dist %>%
+         filter(origin_name == closest_to_center[1,]$teksti) %>%
+         arrange(desc(dist)) %>% slice(1:20)
+if (check_namespaces(pkgs = libs)) {
+ggplot(furthest20,
+       aes(x = dist, y = reorder(destination_name, dist), label = round(dist))) +
+  geom_col() + geom_text(aes(x = 10000), color = "white", hjust = 0) +
+  labs(title = paste("Furthest 20 municipality localities \nfrom the most central locality of ", closest_to_center[1,]$teksti), x = "distance in meters")
+  } else {
+  message("One or more of the following packages is not available: ", 
+          paste(libs, collapse = ", "))
+}
+
+## -----------------------------------------------------------------------------
+sf_lahto <- kunta %>% 
+  filter(teksti %in% closest_to_center[1,]$teksti) %>%
+  select(teksti)
+sf_paate <- kunta %>% 
+  filter(teksti %in% furthest20$destination_name) %>% 
+  select(teksti)
+
+triplst <- list()
+for (i in 1:nrow(sf_paate)){
+triplst[[i]] <- rbind(
+  sf_lahto,
+  sf_paate[i,]
+) %>% 
+  summarize(m = mean(row_number()),do_union=FALSE) %>% 
+  st_cast("LINESTRING")
+}
+trips <- do.call("rbind", triplst)
+
+if (check_namespaces(pkgs = libs)) {
+ggplot() +
+  geom_sf(data = muni %>% st_union(), alpha = .3) +
+  geom_sf(data = trips, color = "dim grey") +
+  geom_sf_label(data = sf_lahto, aes(label = teksti)) +
+  geom_sf_text(data = sf_paate, aes(label = teksti))
+  } else {
   message("One or more of the following packages is not available: ", 
           paste(libs, collapse = ", "))
 }
