@@ -12,7 +12,7 @@
 
 <meta name="author" content="Markus Kainu" />
 
-<meta name="date" content="2023-02-16" />
+<meta name="date" content="2023-04-16" />
 
 <title>Joining attribute data with geofi data</title>
 
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Joining attribute data with geofi data</h1>
 <h4 class="author">Markus Kainu</h4>
-<h4 class="date">2023-02-16</h4>
+<h4 class="date">2023-04-16</h4>
 
 
 
@@ -405,19 +405,19 @@ key figures</a></p>
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>          <span class="fu">paste</span>(libs, <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 12,800 × 4</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    region_2020   year  information                                      munici…¹</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    region_2020   year  information                         municipal_key_figures</span></span>
 <span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;                                               &lt;dbl&gt;</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 WHOLE COUNTRY 2019  degree_of_urbanisation_percent                    8.64e+1</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 WHOLE COUNTRY 2019  population                                        5.53e+6</span></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 WHOLE COUNTRY 2019  population_change_from_the_previous_year_percent  1   e-1</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 WHOLE COUNTRY 2019  share_of_persons_aged_under_15_of_the_populatio…  1.58e+1</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 WHOLE COUNTRY 2019  share_of_persons_aged_15_to_64_of_the_populatio…  6.2 e+1</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 WHOLE COUNTRY 2019  share_of_persons_aged_over_64_of_the_population…  2.23e+1</span></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 WHOLE COUNTRY 2019  share_of_swedish_speakers_of_the_population_per…  5.2 e+0</span></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 WHOLE COUNTRY 2019  share_of_foreign_citizens_of_the_population_per…  4.8 e+0</span></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 WHOLE COUNTRY 2019  excess_of_births_persons                         -8.34e+3</span></span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 WHOLE COUNTRY 2019  intermunicipal_migration_gain_loss_persons        0      </span></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 12,790 more rows, and abbreviated variable name ¹​municipal_key_figures</span></span></code></pre></div>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 WHOLE COUNTRY 2019  degree_of_urbanisation_percent                       86.4</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 WHOLE COUNTRY 2019  population                                      5525292  </span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 WHOLE COUNTRY 2019  population_change_from_the_previou…                   0.1</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 WHOLE COUNTRY 2019  share_of_persons_aged_under_15_of_…                  15.8</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 WHOLE COUNTRY 2019  share_of_persons_aged_15_to_64_of_…                  62  </span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 WHOLE COUNTRY 2019  share_of_persons_aged_over_64_of_t…                  22.3</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 WHOLE COUNTRY 2019  share_of_swedish_speakers_of_the_p…                   5.2</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 WHOLE COUNTRY 2019  share_of_foreign_citizens_of_the_p…                   4.8</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 WHOLE COUNTRY 2019  excess_of_births_persons                          -8336  </span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 WHOLE COUNTRY 2019  intermunicipal_migration_gain_loss…                   0  </span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # ℹ 12,790 more rows</span></span></code></pre></div>
 <p>Once we have the data in long format we can observe the
 <code>region_2020</code>-column.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">check_namespaces</span>(<span class="at">pkgs =</span> libs)) {</span>
@@ -439,7 +439,7 @@ key figures</a></p>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 Brändö                  32</span></span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 Central Finland         32</span></span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 Central Ostrobothnia    32</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 390 more rows</span></span></code></pre></div>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # ℹ 390 more rows</span></span></code></pre></div>
 <p>This is not obvious to all, but have the municipality names in
 Finnish among other regional breakdowns which allows us to combine the
 data with spatial data using
@@ -538,7 +538,7 @@ Finland.</p>
 <span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 Kymenlaakso Hospital District              1</span></span>
 <span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 Lappi Hospital District                    1</span></span>
 <span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 Länsi-Pohja Hospital District              1</span></span>
-<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 12 more rows</span></span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # ℹ 12 more rows</span></span>
 <span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a>muni <span class="ot">&lt;-</span> <span class="fu">get_municipalities</span>(<span class="at">year =</span> <span class="dv">2021</span>) </span>
 <span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>muni <span class="sc">%&gt;%</span> </span>
@@ -628,7 +628,7 @@ a similar manner as in the first example.</p>
 <span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 00170  Kruununhaka (Helsinki)                   2021                  7191</span></span>
 <span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 00180  Kamppi - Ruoholahti (Helsinki)           2021                 14440</span></span>
 <span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 00190  Suomenlinna (Helsinki)                   2021                   694</span></span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 3,017 more rows</span></span></code></pre></div>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # ℹ 3,017 more rows</span></span></code></pre></div>
 <p>Before we can join the data, we must extract the numerical postal
 code from <code>postal_code_area</code>-variable.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>libs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ggplot2&quot;</span>,<span class="st">&quot;pxweb&quot;</span>,<span class="st">&quot;janitor&quot;</span>)</span>

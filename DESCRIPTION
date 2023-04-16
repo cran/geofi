@@ -1,8 +1,8 @@
 Type: Package
 Package: geofi
 Title: Access Finnish Geospatial Data
-Version: 1.0.8
-Date: 2023-02-15
+Version: 1.0.9
+Date: 2023-04-16
 Authors@R: c(
     person("Markus", "Kainu", , "markus.kainu@kapsi.fi", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-1376-503X")),
@@ -33,7 +33,7 @@ RoxygenNote: 7.2.3
 X-schema.org-isPartOf: http://ropengov.org/
 X-schema.org-keywords: ropengov
 NeedsCompilation: no
-Packaged: 2023-02-16 11:58:01 UTC; aurelius
+Packaged: 2023-04-16 11:19:53 UTC; aurelius
 Author: Markus Kainu [aut, cre] (<https://orcid.org/0000-0003-1376-503X>),
   Joona Lehtomaki [aut] (<https://orcid.org/0000-0002-7891-0843>),
   Juuso Parkkinen [ctb] (<https://orcid.org/0000-0002-7818-5901>),
@@ -43,4 +43,4 @@ Author: Markus Kainu [aut, cre] (<https://orcid.org/0000-0003-1376-503X>),
   Leo Lahti [aut] (<https://orcid.org/0000-0001-5537-637X>)
 Maintainer: Markus Kainu <markus.kainu@kapsi.fi>
 Repository: CRAN
-Date/Publication: 2023-02-16 12:20:06 UTC
+Date/Publication: 2023-04-16 11:40:02 UTC
