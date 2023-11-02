@@ -9,49 +9,43 @@ knitr::opts_chunk$set(
   dpi = 75
 )
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  # install from CRAN
 #  install.packages("geofi")
 #  
 #  # Install development version from GitHub
 #  remotes::install_github("ropengov/geofi")
 
-## -----------------------------------------------------------------------------
+## ----include = FALSE, eval = TRUE---------------------------------------------
 # Let's first create a function that checks if the suggested 
 # packages are available
 check_namespaces <- function(pkgs){
   return(all(unlist(sapply(pkgs, requireNamespace,quietly = TRUE))))
 }
+apiacc <- geofi::check_api_access()
+pkginst <- check_namespaces(c("sf","dplyr","patchwork","leaflet","ggplot2"))
+apiacc_pkginst <- all(apiacc,pkginst)
 
-## ----municipality_map, fig.width = 5------------------------------------------
+## ----municipality_map, fig.width = 5, eval = apiacc---------------------------
 library(geofi)
 polygon <- get_municipalities(year = 2021, scale = 4500)
 point <- geofi::municipality_central_localities
 # municipality code into integer
 point$municipality_code <- as.integer(point$kuntatunnus)
-library(sf) # for spatial data operations later
 
-## ----base, fig.width = 5------------------------------------------------------
-# dev.off()
+## ----base, fig.width = 5, eval = apiacc_pkginst-------------------------------
+library(sf)
 plot(st_geometry(polygon["municipality_code"]))
 plot(polygon["municipality_code"], add = TRUE, border="white")
 plot(st_geometry(point["municipality_code"]), add = TRUE, color = "black")
 
-## ----gg, fig.width = 5--------------------------------------------------------
-libs <- c("ggplot2")
-if (check_namespaces(pkgs = libs)) {
+## ----gg, fig.width = 5, eval = apiacc_pkginst---------------------------------
 library(ggplot2)
 ggplot() + 
   geom_sf(data = polygon, aes(fill = municipality_code)) +
   geom_sf(data = point)
-} else {
-  message("One or more of the following packages is not available: ", 
-          paste(libs, collapse = ", "))
-}
 
-## ----uusimaa, fig.width=8, fig.height=4---------------------------------------
-libs <- c("ggplot2")
-if (check_namespaces(pkgs = libs)) {
+## ----uusimaa, fig.width=8, fig.height=4, eval = apiacc_pkginst----------------
 library(dplyr)
 polygon_uusimaa <- polygon %>% filter(maakunta_name_fi %in% "Uusimaa")
 point_uusimaa <- point %>% filter(municipality_code %in% polygon_uusimaa$municipality_code)
@@ -60,14 +54,8 @@ ggplot() +
   geom_sf(data = polygon_uusimaa, alpha = .3) + 
   geom_sf(data = point_uusimaa) + 
   geom_sf_text(data = point_uusimaa, aes(label = teksti))
-} else {
-  message("One or more of the following packages is not available: ", 
-          paste(libs, collapse = ", "))
-}
 
-## ----uusimaa_repel, fig.width=8, fig.height=4---------------------------------
-libs <- c("ggplot2")
-if (check_namespaces(pkgs = libs)) {
+## ----uusimaa_repel, fig.width=8, fig.height=4, eval = apiacc_pkginst----------
 ggplot() + 
   theme_light() +
   geom_sf(data = polygon_uusimaa, alpha = .3) + 
@@ -78,12 +66,8 @@ ggplot() +
                                     sf::st_centroid() %>% 
                                     sf::st_coordinates() %>% as_tibble()),
                      aes(label = teksti, x = X, y = Y))
-} else {
-  message("One or more of the following packages is not available: ", 
-          paste(libs, collapse = ", "))
-}
 
-## -----------------------------------------------------------------------------
+## ----create_popdata, eval = apiacc_pkginst------------------------------------
 pop_data <- bind_rows(
   tibble(
     municipality_code = polygon$municipality_code
@@ -98,23 +82,15 @@ pop_data <- bind_rows(
   )
 pop_data
 
-## ----facet,  fig.height=7-----------------------------------------------------
+## ----facet,  fig.height=7, eval = apiacc_pkginst------------------------------
 pop_map <- right_join(polygon, pop_data)
 
-libs <- c("ggplot2")
-if (check_namespaces(pkgs = libs)) {
 ggplot(pop_map, 
        aes(fill = population)) +
   geom_sf() +
   facet_grid(~time)
-} else {
-  message("One or more of the following packages is not available: ", 
-          paste(libs, collapse = ", "))
-}
 
-## ----patchwork, fig.width = 8, fig.height=10----------------------------------
-libs <- c("ggplot2","patchwork")
-if (check_namespaces(pkgs = libs)) {
+## ----patchwork, fig.width = 8, fig.height=10, eval = apiacc_pkginst-----------
 library(patchwork)
 p_municipalities <- ggplot(polygon, aes(fill = municipality_code)) + 
   geom_sf() + 
@@ -129,14 +105,8 @@ p_uusimaa <- ggplot(polygon_uusimaa, aes(fill = municipality_code)) +
 (p_municipalities | p_regions) /
 p_uusimaa + plot_layout(nrow = 2, heights = c(1,0.6)) +
   plot_annotation(title = "Combining multiple maps into a single (gg)plot")
-} else {
-  message("One or more of the following packages is not available: ", 
-          paste(libs, collapse = ", "))
-}
 
-## ---- fig.height = 5----------------------------------------------------------
-libs <- c("ggplot2")
-if (check_namespaces(pkgs = libs)) {
+## ----fig.height = 5, eval = apiacc_pkginst------------------------------------
 ggplot(polygon_uusimaa, aes(fill = municipality_code)) +
   geom_sf(color = alpha("white", 1/3)) +
   scale_fill_fermenter(palette = "YlGnBu") +
@@ -148,14 +118,8 @@ ggplot(polygon_uusimaa, aes(fill = municipality_code)) +
         ) +
   labs(title = "Municipality code", 
        fill = NULL)
-} else {
-  message("One or more of the following packages is not available: ", 
-          paste(libs, collapse = ", "))
-}
 
-## ----leaflet, out.width="90%"-------------------------------------------------
-libs <- c("leaflet")
-if (check_namespaces(pkgs = libs)) {
+## ----leaflet, out.width="90%", eval = apiacc_pkginst--------------------------
 polygon_wgs84 <- sf::st_transform(x = polygon, crs = "+proj=longlat +datum=WGS84")
 point_wgs84 <- sf::st_transform(x = point, crs = "+proj=longlat +datum=WGS84")
 
@@ -204,8 +168,4 @@ leaflet(polygon_wgs84, options = leafletOptions(worldCopyJump = F, crs = EPSG306
                                                        padding = "2px 4px"),
                                           textsize = "12px",
                                           direction = "auto"))
-} else {
-  message("One or more of the following packages is not available: ", 
-          paste(libs, collapse = ", "))
-}
 
