@@ -41,7 +41,7 @@ names(geofi::municipality_key_2023)
 geofi::municipality_key_2023 %>% 
   count(maakunta_code,maakunta_name_fi,maakunta_name_sv,maakunta_name_en)
 
-## ----municipality_map, fig.height = 7, fig.width = 4, eval = apiacc-----------
+## ----municipality_map, fig.height = 7, fig.width = 4, eval = apiacc_pkginst----
 municipalities <- get_municipalities(year = 2023, scale = 4500)
 plot(municipalities["municipality_name_fi"], border = NA)
 
@@ -66,22 +66,22 @@ get_municipality_pop(year = 2022) %>%
   select(share) %>% 
   plot()
 
-## ----zipcode_map, fig.height = 7, fig.width = 4, eval = apiacc----------------
+## ----zipcode_map, fig.height = 7, fig.width = 4, eval = apiacc_pkginst--------
 zipcodes <- get_zipcodes(year = 2023) 
 plot(zipcodes["nimi"], border = NA)
 
-## ----statisticsl_grid_data, fig.height = 7, fig.width = 4, eval = apiacc------
+## ----statisticsl_grid_data, fig.height = 7, fig.width = 4, eval = apiacc_pkginst----
 stat_grid <- get_statistical_grid(resolution = 5, auxiliary_data = TRUE)
 plot(stat_grid["euref_x"], border = NA)
 
-## ----population_grid_data, fig.height = 7, fig.width = 4, eval = apiacc-------
+## ----population_grid_data, fig.height = 7, fig.width = 4, eval = apiacc_pkginst----
 pop_grid <- get_population_grid(year = 2018, resolution = 5)
 plot(pop_grid["kunta"], border = NA)
 
-## ----central_localities, fig.height = 7, fig.width = 4, eval = TRUE-----------
+## ----central_localities, fig.height = 7, fig.width = 4, eval = apiacc_pkginst----
 plot(municipality_central_localities["teksti"])
 
-## ----geofacets, eval = TRUE---------------------------------------------------
+## ----geofacets, eval = apiacc_pkginst-----------------------------------------
 d <- data(package = "geofi")
 as_tibble(d$results) %>% 
   select(Item,Title) %>% 
