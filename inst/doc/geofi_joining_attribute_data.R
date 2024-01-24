@@ -52,35 +52,17 @@ map_data %>%
   theme(legend.position = "top")
 
 ## ----zipcode_with_statistics_finland, eval = apiacc_pkginst-------------------
-library(pxweb)
-# lets get all zipcodes and all variables
-pxweb_query_list <- 
-  list("Postinumeroalue"=c("*"),
-       "Tiedot"=c("he_vakiy"),
-       "Vuosi"=c("2021"))
-
-px_raw <- 
-  pxweb_get(url = "https://statfin.stat.fi/PXWeb/api/v1/en/Postinumeroalueittainen_avoin_tieto/uusin/paavo_pxt_12ey.px",
-            query = pxweb_query_list)
-
-
-px_data <- as_tibble(
-  as.data.frame(px_raw, 
-                column.name.type = "text", 
-                variable.value.type = "text")
-  ) %>% setNames(janitor::make_clean_names(names(.)))
-px_data %>% 
-  filter(postal_code_area != "Finland")
+px_data <- read.csv("https://pxdata.stat.fi:443/PxWeb/sq/43d3d0aa-636e-4a4b-bbe1-decae45fc2b4", 
+                    header = TRUE, sep = ";", fileEncoding = "Latin1")
+px_data$posti_alue <- sub(" .+$", "", px_data$Postinumeroalue)
 
 ## ----get_zipcodes, eval = apiacc_pkginst--------------------------------------
-px_data$posti_alue <- sub(" .+$", "", px_data$postal_code_area)
-
 # Lets join with spatial data and plot the area of each zipcode
 zipcodes19 <- get_zipcodes(year = 2019) 
 zipcodes_map <- left_join(zipcodes19, 
                           px_data)
 ggplot(zipcodes_map) + 
-  geom_sf(aes(fill = inhabitants_total_he), 
+  geom_sf(aes(fill = X2021), 
           color  = alpha("white", 1/3)) +
   labs(title = "Total number of inhabitants, 2021", 
        fill = NULL)
