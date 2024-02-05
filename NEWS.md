@@ -1,3 +1,9 @@
+# geofi 1.0.15
+
++ 2024 regional classifications updated.
++ geofi_joining_attribute_data vignette fixed
+
+
 # geofi 1.0.12
 
 + pxweb removed from suggested packages list.
