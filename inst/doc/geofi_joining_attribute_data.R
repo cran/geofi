@@ -24,18 +24,15 @@ check_namespaces <- function(pkgs){
   return(all(unlist(sapply(pkgs, requireNamespace,quietly = TRUE))))
 }
 apiacc <- geofi::check_api_access()
-pkginst <- check_namespaces(c("sotkanet","dplyr","tidyr","janitor","ggplot2"))
+pkginst <- check_namespaces(c("dplyr","tidyr","janitor","ggplot2"))
 apiacc_pkginst <- all(apiacc,pkginst)
 
 ## ----municipality_map, eval = apiacc_pkginst----------------------------------
 library(geofi)
 muni <- get_municipalities(year = 2023)
 
-library(sotkanet)
 library(dplyr)
-sotkadata_swedish_speaking_pop <- GetDataSotkanet(indicators = 2433, years = 2000:2022) %>% 
-  filter(region.category == "KUNTA") %>% 
-  mutate(municipality_code = as.integer(region.code))
+sotkadata_swedish_speaking_pop <- geofi::sotkadata_swedish_speaking_pop
 
 ## ----bind_data, eval = apiacc_pkginst-----------------------------------------
 map_data <- right_join(muni, 
@@ -52,15 +49,13 @@ map_data %>%
   theme(legend.position = "top")
 
 ## ----zipcode_with_statistics_finland, eval = apiacc_pkginst-------------------
-px_data <- read.csv("https://pxdata.stat.fi:443/PxWeb/sq/43d3d0aa-636e-4a4b-bbe1-decae45fc2b4", 
-                    header = TRUE, sep = ";", fileEncoding = "Latin1")
-px_data$posti_alue <- sub(" .+$", "", px_data$Postinumeroalue)
+statfi_zipcode_population <- geofi::statfi_zipcode_population
 
 ## ----get_zipcodes, eval = apiacc_pkginst--------------------------------------
 # Lets join with spatial data and plot the area of each zipcode
 zipcodes19 <- get_zipcodes(year = 2019) 
 zipcodes_map <- left_join(zipcodes19, 
-                          px_data)
+                          statfi_zipcode_population)
 ggplot(zipcodes_map) + 
   geom_sf(aes(fill = X2022), 
           color  = alpha("white", 1/3)) +

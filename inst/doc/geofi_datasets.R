@@ -23,7 +23,7 @@ check_namespaces <- function(pkgs){
   return(all(unlist(sapply(pkgs, requireNamespace,quietly = TRUE))))
 }
 apiacc <- geofi::check_api_access()
-pkginst <- check_namespaces(c("sotkanet","geofacet","ggplot2","dplyr"))
+pkginst <- check_namespaces(c("geofacet","ggplot2","dplyr"))
 apiacc_pkginst <- all(apiacc,pkginst)
 
 ## ----municipality_keys, eval = pkginst----------------------------------------
@@ -90,10 +90,7 @@ as_tibble(d$results) %>%
 
 ## ----geofacet, fig.height = 8, fig.width = 10, eval = apiacc_pkginst----------
 # Let pull population data from THL
-library(sotkanet)
-sotkadata <- GetDataSotkanet(indicators = 127, years = 2000:2022) %>% 
-  filter(region.category == "KUNTA") %>% 
-  mutate(municipality_code = as.integer(region.code))
+sotkadata <- geofi::sotkadata_population
 
 # lets aggregate population data
 dat <- left_join(geofi::municipality_key_2023 %>% select(-year),
