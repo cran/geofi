@@ -11,11 +11,11 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  # install from CRAN
-#  install.packages("geofi")
-#  
-#  # Install development version from GitHub
-#  remotes::install_github("ropengov/geofi")
+# # install from CRAN
+# install.packages("geofi")
+# 
+# # Install development version from GitHub
+# remotes::install_github("ropengov/geofi")
 
 ## ----include = FALSE, eval = TRUE---------------------------------------------
 # Let's first create a function that checks if the suggested 
