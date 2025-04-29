@@ -42,7 +42,7 @@ map_data <- right_join(muni,
 ## ----plot1, fig.width = 10, fig.height = 7, eval = apiacc_pkginst-------------
 
 library(ggplot2)
-map_data %>% 
+map_data |> 
   ggplot(aes(fill = primary.value)) + 
   geom_sf() + 
   labs(title = unique(sotkadata_swedish_speaking_pop$indicator.title.fi)) +

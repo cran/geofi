@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Markus Kainu" />
+
+<meta name="date" content="2025-04-28" />
+
+<title>Accessing Spatial Data from NLS OGC apis with geofi</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Accessing Spatial Data from NLS OGC apis
+with geofi</h1>
+<h4 class="author">Markus Kainu</h4>
+<h4 class="date">2025-04-28</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The <code>geofi</code> package provides tools to access spatial data
+from the <strong>Maastotietokanta</strong> (Topographic Database) and
+<strong>Geographic Names</strong> (Nimistö) datasets provided by the
+National Land Survey of Finland (NLS) via their OGC API. This vignette
+demonstrates how to use the package’s core functions to:</p>
+<ul>
+<li>List available collections in the Maastotietokanta.</li>
+<li>Download specific collections of spatial data.</li>
+<li>Query geographic place names with flexible filtering options.</li>
+</ul>
+<p>The package handles API authentication, pagination, spatial
+filtering, and coordinate reference system (CRS) transformations, making
+it easy to work with Finnish spatial data in R.</p>
+<p>To use the package, you need an <strong>API key</strong> from the
+National Land Survey of Finland. Visit <a href="https://www.maanmittauslaitos.fi/en/rajapinnat/api-avaimen-ohje">their
+website</a> to obtain one. Once you have the key, set it in R using:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">geofi_mml_api_key =</span> <span class="st">&quot;your_api_key_here&quot;</span>)</span></code></pre></div>
+</div>
+<div id="package-overview" class="section level2">
+<h2>Package Overview</h2>
+<p>The <code>geofi</code> package includes the following key
+functions:</p>
+<ul>
+<li><code>ogc_get_maastotietokanta_collections()</code>: Retrieves a
+list of available collections from the Maastotietokanta, including their
+titles and descriptions.</li>
+<li><code>ogc_get_maastotietokanta()</code>: Downloads a specific
+collection from the Maastotietokanta, with options for CRS, spatial
+filtering, and pagination.</li>
+<li><code>ogc_get_nimisto()</code>: Queries the Geographic Names
+dataset, allowing filtering by search string, bounding box, and other
+parameters.</li>
+<li><code>fetch_ogc_api_mml()</code>: An internal function that handles
+low-level API requests and pagination (not typically called directly by
+users).</li>
+</ul>
+<p>All functions return spatial data as <code>sf</code> objects,
+compatible with the <code>sf</code> package for spatial analysis and
+visualization.</p>
+</div>
+<div id="step-1-listing-available-collections" class="section level2">
+<h2>Step 1: Listing Available Collections</h2>
+<p>To explore the datasets available in the Maastotietokanta, use
+<code>ogc_get_maastotietokanta_collections()</code>. This function
+queries the OGC API and returns a data frame with collection IDs and
+descriptions.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>collections <span class="ot">&lt;-</span> <span class="fu">ogc_get_maastotietokanta_collections</span>()</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">head</span>(collections)</span></code></pre></div>
+<p>This list helps you identify the <code>collection</code> parameter
+needed for <code>ogc_get_maastotietokanta()</code>.</p>
+</div>
+<div id="step-2-downloading-a-maastotietokanta-collection" class="section level2">
+<h2>Step 2: Downloading a Maastotietokanta Collection</h2>
+<p>The <code>ogc_get_maastotietokanta()</code> function downloads a
+specific collection as an <code>sf</code> object. You can customize the
+output with parameters like:</p>
+<ul>
+<li><code>collection</code>: The name of the collection (e.g.,
+“<code>hautausmaa</code>” for cemeteries).</li>
+<li><code>crs</code>: The coordinate reference system (EPSG:3067 or
+EPSG:4326).</li>
+<li><code>limit</code>: Maximum number of features per request (or
+<code>NULL</code> to fetch all).</li>
+<li><code>bbox</code>: A bounding box for spatial filtering (in
+EPSG:4326).</li>
+<li><code>max_pages</code>: Maximum number of pages to fetch when
+paginating.</li>
+</ul>
+<div id="example-downloading-cemeteries" class="section level3">
+<h3>Example: Downloading Cemeteries</h3>
+<p>Let’s download the “<code>hautausmaa</code>” collection in the
+default CRS (EPSG:3067):</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>cemeteries <span class="ot">&lt;-</span> <span class="fu">ogc_get_maastotietokanta</span>(<span class="at">collection =</span> <span class="st">&quot;hautausmaa&quot;</span>, <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>cemeteries</span></code></pre></div>
+</div>
+<div id="example-spatial-filtering-with-a-bounding-box" class="section level3">
+<h3>Example: Spatial Filtering with a Bounding Box</h3>
+<p>To download cemeteries within a specific area (e.g., around
+Helsinki), use the <code>bbox</code> parameter. Coordinates must be in
+EPSG:4326 (WGS84).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>cemeteries_helsinki <span class="ot">&lt;-</span> <span class="fu">ogc_get_maastotietokanta</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">collection =</span> <span class="st">&quot;hautausmaa&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">bbox =</span> <span class="st">&quot;24.5,60.1,25.5,60.5&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">4326</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>)</span></code></pre></div>
+<p>Visualize the results using <code>ggplot2</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">ggplot</span>(cemeteries_helsinki) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Cemeteries near Helsinki&quot;</span>)</span></code></pre></div>
+</div>
+<div id="example-handling-large-collections" class="section level3">
+<h3>Example: Handling Large Collections</h3>
+<p>For large collections like “<code>suo</code>” (bogs/marshes), you may
+need to increase <code>max_pages</code> to fetch all features:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>bogs <span class="ot">&lt;-</span> <span class="fu">ogc_get_maastotietokanta</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">collection =</span> <span class="st">&quot;suo&quot;</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">max_pages =</span> <span class="dv">15</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>)</span></code></pre></div>
+<p><strong>Note</strong>: Large collections may take significant time to
+download. If <code>max_pages</code> is reached, a warning will indicate
+that additional features may exist.</p>
+</div>
+</div>
+<div id="step-3-querying-geographic-names" class="section level2">
+<h2>Step 3: Querying Geographic Names</h2>
+<p>The <code>ogc_get_nimisto()</code> function retrieves place names
+from the Geographic Names dataset. You can filter results by:</p>
+<ul>
+<li><code>search_string</code>: A case-insensitive search term (e.g.,
+“<code>kainu</code>”).</li>
+<li><code>bbox</code>: A bounding box for spatial filtering.</li>
+<li><code>limit</code>: Maximum number of features to retrieve.</li>
+<li><code>crs</code>: Output CRS (EPSG:3067 or EPSG:4326).</li>
+</ul>
+<div id="example-searching-for-place-names" class="section level3">
+<h3>Example: Searching for Place Names</h3>
+<p>Search for place names containing “<code>kainu</code>”:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>kainu_places <span class="ot">&lt;-</span> <span class="fu">ogc_get_nimisto</span>(<span class="at">search_string =</span> <span class="st">&quot;kainu&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">print</span>(kainu_places)</span></code></pre></div>
+<p>Visualize the results:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">ggplot</span>(kainu_places) <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">geom_sf_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> spelling), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">check_overlap =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Place Names Containing &#39;Kainu&#39;&quot;</span>)</span></code></pre></div>
+</div>
+<div id="example-combining-search-and-spatial-filtering" class="section level3">
+<h3>Example: Combining Search and Spatial Filtering</h3>
+<p>Search for “kainu*” (with * wildcard) within a bounding box covering
+most part of Kainuu-region:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>kainu_bbox <span class="ot">&lt;-</span> <span class="fu">ogc_get_nimisto</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">search_string =</span> <span class="st">&quot;kainu*&quot;</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">bbox =</span> <span class="st">&quot;27.515259,63.450509,30.531006,64.524823&quot;</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">4326</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="advanced-features" class="section level2">
+<h2>Advanced Features</h2>
+<div id="pagination" class="section level3">
+<h3>Pagination</h3>
+<p>When <code>limit = NULL</code> in
+<code>ogc_get_maastotietokanta()</code> or
+<code>ogc_get_nimisto()</code>, the package automatically paginates
+through large datasets. The <code>fetch_ogc_api_mml()</code> function
+handles this internally, attempting to fetch all features in one request
+(<code>limit=-1</code>) or falling back to paginated requests if needed.
+Use <code>max_pages</code> to control the maximum number of pages
+fetched.</p>
+</div>
+<div id="error-handling" class="section level3">
+<h3>Error Handling</h3>
+<p>The package includes robust error handling:</p>
+<ul>
+<li>Validates inputs (e.g., API key, CRS, bounding box format).</li>
+<li>Retries failed requests up to 3 times for transient network
+issues.</li>
+<li>Handles HTTP 429 (rate limit) errors by respecting the Retry-After
+header.</li>
+<li>Provides informative error messages for API failures or invalid
+responses.</li>
+</ul>
+</div>
+<div id="custom-parameters" class="section level3">
+<h3>Custom Parameters</h3>
+<p>Function <code>ogc_get_nimisto()</code> support
+<code>custom_params</code> for advanced API queries. For example:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>swimming_beaches_filtered_by_municipality_number <span class="ot">&lt;-</span> <span class="fu">ogc_get_nimisto</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="at">search_string =</span> <span class="st">&quot;*uimaranta*&quot;</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="at">custom_params =</span> <span class="st">&quot;municipality=091&quot;</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>)</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>swimming_beaches_filtered_by_municipality_number</span></code></pre></div>
+<p>Consult the <a href="https://www.maanmittauslaitos.fi/nimiston-kyselypalvelu-ogc-api/tekninen-kuvaus">NLS
+OGC API documentation</a> for valid parameters.</p>
+</div>
+</div>
+<div id="best-practices" class="section level2">
+<h2>Best Practices</h2>
+<ul>
+<li><strong>API Key Management</strong>: Store your API key securely
+using <code>options(geofi_mml_api_key = &quot;your_key&quot;)</code> rather than
+hardcoding it in scripts.</li>
+<li><strong>Large Datasets</strong>: For collections like
+“<code>suo</code>”, test with a small <code>limit</code> or
+<code>bbox</code> to estimate runtime before fetching all features.</li>
+<li><strong>CRS Selection</strong>: Use EPSG:3067 (ETRS-TM35FIN) for
+Finnish data unless you need WGS84 (EPSG:4326) for compatibility with
+other systems.</li>
+<li><strong>Check Available Collections</strong>: Always use
+<code>ogc_get_maastotietokanta_collections()</code> to verify collection
+names before downloading.</li>
+</ul>
+</div>
+<div id="additional-resources" class="section level2">
+<h2>Additional Resources</h2>
+<ul>
+<li>Maastotietokanta Product Description</li>
+<li>Geographic Names Product Description</li>
+<li>NLS API Key Instructions</li>
+</ul>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The <code>geofi</code> package simplifies access to the
+Maastotietokanta and Geographic Names datasets, enabling spatial
+analysis of Finnish topographic and place name data. By handling API
+requests, pagination, and CRS transformations, it allows users to focus
+on data analysis and visualization. Try the examples above and explore
+the datasets to uncover insights about Finland’s geography!</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

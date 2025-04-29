@@ -12,7 +12,7 @@
 
 <meta name="author" content="Markus Kainu" />
 
-<meta name="date" content="2025-02-11" />
+<meta name="date" content="2025-04-28" />
 
 <title>Joining attribute data with geofi data</title>
 
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Joining attribute data with geofi data</h1>
 <h4 class="author">Markus Kainu</h4>
-<h4 class="date">2025-02-11</h4>
+<h4 class="date">2025-04-28</h4>
 
 
 
@@ -384,7 +384,7 @@ data with spatial data using
 panels sharing a scale.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>map_data <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>map_data <span class="sc">|&gt;</span> </span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> primary.value)) <span class="sc">+</span> </span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span> </span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">unique</span>(sotkadata_swedish_speaking_pop<span class="sc">$</span>indicator.title.fi)) <span class="sc">+</span></span>

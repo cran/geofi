@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Geocoding and Reverse Geocoding with the geofi Package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Geocoding and Reverse Geocoding with the
+geofi Package</h1>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The geofi package provides tools for geocoding and reverse geocoding
+Finnish place names, street addresses, and geographic coordinates using
+the National Land Survey of Finland (NLS) geocoding REST API. This
+vignette demonstrates how to use the <code>geocode()</code> and
+<code>geocode_reverse()</code> functions to:</p>
+<ul>
+<li><strong>Geocode</strong>: Convert textual location descriptions
+(e.g., place names or street addresses) into spatial coordinates.</li>
+<li><strong>Reverse Geocode</strong>: Convert geographic coordinates
+into textual location descriptions (e.g., place names or
+addresses).</li>
+</ul>
+<p>These functions are designed for researchers, analysts, and
+developers working with spatial data in Finland, offering robust error
+handling and integration with the sf package for spatial data
+manipulation.</p>
+</div>
+<div id="prerequisites" class="section level2">
+<h2>Prerequisites</h2>
+<div id="obtaining-an-api-key" class="section level3">
+<h3>Obtaining an API Key</h3>
+<p>To use the NLS geocoding API, you need an API key from the National
+Land Survey of Finland. Follow these steps:</p>
+<ul>
+<li>Visit the NLS API key instructions page.</li>
+<li>Register or log in to obtain your personal API key.</li>
+<li>Store the API key securely, as it will be used to authenticate your
+requests.</li>
+</ul>
+</div>
+<div id="installing-the-geofi-package" class="section level3">
+<h3>Installing the geofi Package</h3>
+<p>Install the <code>geofi</code> package from GitHub (or CRAN, if
+available):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install from GitHub</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;rOpenGov/geofi&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># Install from CRAN</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;geofi&quot;</span>)</span></code></pre></div>
+<p>Load the package and required dependencies:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(geofi)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+</div>
+<div id="setting-the-api-key" class="section level3">
+<h3>Setting the API Key</h3>
+<p>Set your API key using the <code>options()</code> function. Replace
+“<code>your_api_key_here</code>” with your actual API key:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">geofi_mml_api_key =</span> <span class="st">&quot;your_api_key_here&quot;</span>)</span></code></pre></div>
+<p>Alternatively, you can pass the API key directly to the
+<code>api_key</code> parameter in each function call, but setting it
+globally is more convenient.</p>
+</div>
+</div>
+<div id="geocoding-with-geocode" class="section level2">
+<h2>Geocoding with <code>geocode()</code></h2>
+<p>The <code>geocode()</code> function converts place names or street
+addresses into spatial coordinates, returning an <code>sf</code> object
+with point geometries. It supports multiple data sources (e.g.,
+geographic names, addresses) and output coordinate reference systems
+(CRS: EPSG:3067 or EPSG:4326).</p>
+<div id="example-1-geocoding-a-place-name" class="section level3">
+<h3>Example 1: Geocoding a Place Name</h3>
+<p>Let’s geocode the place name “Suomenlinna,” a famous sea fortress in
+Helsinki, using the <code>geographic-names</code> source:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>suomenlinna <span class="ot">&lt;-</span> <span class="fu">geocode</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">search_string =</span> <span class="st">&quot;Suomenlinna&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">source =</span> <span class="st">&quot;geographic-names&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">4326</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">print</span>(suomenlinna)</span></code></pre></div>
+<p>This returns an <code>sf</code> object with the coordinates of
+Suomenlinna in EPSG:4326 (WGS84). If no results are found, an empty
+<code>sf</code> object is returned with a warning.</p>
+</div>
+<div id="example-2-geocoding-a-street-address" class="section level3">
+<h3>Example 2: Geocoding a Street Address</h3>
+<p>Geocode a specific street address, “<em>Mannerheimintie 100,
+Helsinki</em>” with a limit of 5 results:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>address <span class="ot">&lt;-</span> <span class="fu">geocode</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">search_string =</span> <span class="st">&quot;Mannerheimintie 100, Helsinki&quot;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">source =</span> <span class="st">&quot;addresses&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">3067</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">size =</span> <span class="dv">5</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">print</span>(address)</span></code></pre></div>
+<p>This returns an <code>sf</code> object in EPSG:3067 (ETRS-TM35FIN),
+suitable for Finnish spatial data analysis.</p>
+</div>
+<div id="visualizing-geocoded-results" class="section level3">
+<h3>Visualizing Geocoded Results</h3>
+<p>Visualize the geocoded address on a map using
+<code>ggplot2</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> address) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">color =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Geocoded Location: Mannerheimintie 100, Helsinki&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;CRS: ETRS-TM35FIN (EPSG:3067)&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+</div>
+<div id="advanced-options" class="section level3">
+<h3>Advanced Options</h3>
+<p>You can refine the geocoding results using additional parameters:</p>
+<ul>
+<li><code>lang</code>: Set the response language (“<code>fi</code>”,
+“<code>sv</code>”, or “<code>en</code>”).</li>
+<li><code>options</code>: Pass custom API options, such as focusing the
+search near a specific point:</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>focused <span class="ot">&lt;-</span> <span class="fu">geocode</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="at">search_string =</span> <span class="st">&quot;Helsinki&quot;</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">source =</span> <span class="st">&quot;geographic-names&quot;</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">options =</span> <span class="st">&quot;focus.point.lat=60.1699&amp;focus.point.lon=24.9384&quot;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="reverse-geocoding-with-geocode_reverse" class="section level2">
+<h2>Reverse Geocoding with geocode_reverse()</h2>
+<p>The <code>geocode_reverse()</code> function converts geographic
+coordinates (as <code>sf</code> POINT objects in EPSG:4326) into place
+names or addresses. It supports multiple points, customizable search
+radii, and different output formats (<code>sf</code> or JSON).</p>
+<div id="example-3-reverse-geocoding-a-single-point" class="section level3">
+<h3>Example 3: Reverse Geocoding a Single Point</h3>
+<p>Reverse geocode the coordinates of Parliament House, Helsinki
+(approximately 60.1725°N, 24.933333°E):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Create an sf point</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>parliament_point <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">lon =</span> <span class="fl">24.933333</span>, <span class="at">lat =</span> <span class="fl">60.1725</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  sf<span class="sc">::</span><span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;lon&quot;</span>, <span class="st">&quot;lat&quot;</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># Reverse geocode</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>places <span class="ot">&lt;-</span> <span class="fu">geocode_reverse</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="at">point =</span> parliament_point,</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="at">sources =</span> <span class="st">&quot;geographic-names&quot;</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>)</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="fu">print</span>(places)</span></code></pre></div>
+<p>This returns an <code>sf</code> object with the place name and
+coordinates in EPSG:4326.</p>
+</div>
+</div>
+<div id="example-4-returning-raw-json" class="section level1">
+<h1>Example 4: Returning Raw JSON</h1>
+<p>For debugging or custom processing, return raw JSON responses:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>json_results <span class="ot">&lt;-</span> <span class="fu">geocode_reverse</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">point =</span> parliament_point,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">boundary_circle_radius =</span> <span class="dv">1</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">return =</span> <span class="st">&quot;json&quot;</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>)</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="fu">print</span>(json_results)</span></code></pre></div>
+<div id="visualizing-reverse-geocoded-results" class="section level3">
+<h3>Visualizing Reverse Geocoded Results</h3>
+<p>Plot the reverse geocoded results alongside the input points:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> parliament_point, <span class="at">color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">shape =</span> <span class="dv">17</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> places, <span class="at">color =</span> <span class="st">&quot;blue&quot;</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Reverse Geocoded Location: Eduskuntatalo&quot;</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">&quot;Red: Input Point, Blue: Geocoded Result (EPSG:4326)&quot;</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+</div>
+<div id="tips-and-best-practices" class="section level2">
+<h2>Tips and Best Practices</h2>
+<ul>
+<li><strong>API Key Security</strong>: Store your API key in an
+environment variable or secure configuration file rather than hardcoding
+it in scripts.</li>
+<li><strong>Rate Limits</strong>: The NLS API may impose rate limits.
+Both functions handle HTTP 429 errors by retrying after a delay, but
+avoid excessive requests.</li>
+<li><strong>Input Validation</strong>: Ensure inputs are correctly
+formatted (e.g., sf objects for geocode_reverse() must be in
+EPSG:4326).</li>
+<li><strong>CRS Considerations</strong>: Use EPSG:3067 for Finnish
+spatial analysis and EPSG:4326 for global compatibility or web
+mapping.</li>
+<li><strong>Combining Functions</strong>: You can chain geocode() and
+geocode_reverse() for round-trip testing (e.g., geocode an address, then
+reverse geocode the coordinates).</li>
+</ul>
+</div>
+<div id="limitations" class="section level2">
+<h2>Limitations</h2>
+<ul>
+<li><strong>API Dependency</strong>: The functions rely on the NLS
+geocoding API, which requires an internet connection and a valid API
+key.</li>
+<li><strong>Coverage</strong>: Results are limited to Finland and depend
+on the API’s data sources (e.g., geographic names, addresses).</li>
+<li><strong>Precision</strong>: Geocoding accuracy varies by source and
+input specificity. Use <code>size</code> and
+<code>boundary_circle_radius</code> to refine results.</li>
+<li><strong>Performance</strong>: Reverse geocoding multiple points can
+be slow due to individual API requests. Consider batch processing for
+large datasets.</li>
+</ul>
+</div>
+<div id="further-resources" class="section level2">
+<h2>Further Resources</h2>
+<ul>
+<li><strong>NLS Geocoding API Documentation</strong>: <a href="https://www.maanmittauslaitos.fi/kartat-ja-paikkatieto/aineistot-ja-rajapinnat/paikkatietojen-rajapintapalvelut/geokoodauspalvelu" class="uri">https://www.maanmittauslaitos.fi/kartat-ja-paikkatieto/aineistot-ja-rajapinnat/paikkatietojen-rajapintapalvelut/geokoodauspalvelu</a></li>
+<li><strong>API Key Instructions</strong>: <a href="https://www.maanmittauslaitos.fi/en/rajapinnat/api-avaimen-ohje" class="uri">https://www.maanmittauslaitos.fi/en/rajapinnat/api-avaimen-ohje</a></li>
+<li><code>geofi</code> Package Repository: <a href="https://github.com/rOpenGov/geofi" class="uri">https://github.com/rOpenGov/geofi</a></li>
+<li><strong>sf Package</strong>: For advanced spatial data manipulation
+(<a href="https://cran.r-project.org/package=sf">CRAN</a>).</li>
+</ul>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The <code>geofi</code> package simplifies geocoding and reverse
+geocoding for Finnish spatial data, leveraging the NLS geocoding API.
+With <code>geocode()</code> and <code>geocode_reverse()</code>, users
+can seamlessly convert between textual locations and coordinates,
+enabling applications in urban planning, geographic analysis, and more.
+Try the examples above with your own data, and explore the package’s
+flexibility to suit your needs.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

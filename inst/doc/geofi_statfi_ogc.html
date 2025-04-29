@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Markus Kainu" />
+
+<meta name="date" content="2025-04-28" />
+
+<title>Accessing Spatial and Population Data from Statistics Finland OGC api</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Accessing Spatial and Population Data from
+Statistics Finland OGC api</h1>
+<h4 class="author">Markus Kainu</h4>
+<h4 class="date">2025-04-28</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The <code>geofi</code> package provides tools to access spatial data
+from <strong>Statistics Finland’s OGC API</strong>, including
+administrative boundaries, population data by administrative units, and
+population data by statistical grid cells. This vignette demonstrates
+how to use the package’s core functions to:</p>
+<ul>
+<li>Retrieve Finnish administrative area polygons (e.g., municipalities,
+regions).</li>
+<li>Fetch population data linked to administrative units.</li>
+<li>Access population data for statistical grid cells.</li>
+</ul>
+<p>Unlike some other spatial data APIs, <em>no API key is required</em>
+to access Statistics Finland’s OGC API, making it straightforward to get
+started. The package handles pagination, spatial filtering, and
+coordinate reference system (CRS) transformations, delivering data as
+<code>sf</code> objects compatible with the <code>sf</code> package for
+spatial analysis and visualization.</p>
+</div>
+<div id="package-overview" class="section level2">
+<h2>Package Overview</h2>
+<p>The <code>geofi</code> package includes the following key functions
+for accessing Statistics Finland data:</p>
+<ul>
+<li><code>ogc_get_statfi_area()</code>: Retrieves administrative area
+polygons (e.g., municipalities, wellbeing areas) for specified years,
+scales, and tessellation types.</li>
+<li><code>ogc_get_statfi_area_pop()</code>: Fetches administrative area
+polygons with associated population data, pivoted into a wide
+format.</li>
+<li><code>ogc_get_statfi_statistical_grid()</code>: Retrieves population
+data for statistical grid cells at different resolutions (1km or
+5km).</li>
+<li><code>fetch_ogc_api_statfi()</code>: An internal function that
+handles low-level API requests and pagination (not typically called
+directly by users).</li>
+</ul>
+<p>All functions return spatial data as <code>sf</code> objects, making
+it easy to integrate with spatial analysis workflows in R.</p>
+</div>
+<div id="step-1-retrieving-administrative-area-polygons" class="section level2">
+<h2>Step 1: Retrieving Administrative Area Polygons</h2>
+<p>The <code>ogc_get_statfi_area()</code> function retrieves polygons
+for Finnish administrative units, such as municipalities
+(<code>kunta</code>), wellbeing areas (<code>hyvinvointialue</code>), or
+regions (<code>maakunta</code>). You can customize the output with
+parameters like:</p>
+<ul>
+<li><code>year</code>: The year of the boundaries (2020–2022).</li>
+<li><code>scale</code>: Map resolution (1:1,000,000 or
+1:4,500,000).</li>
+<li><code>tessellation</code>: Type of administrative unit (e.g., kunta,
+hyvinvointialue).</li>
+<li><code>crs</code>: Coordinate reference system (EPSG:3067 or
+EPSG:4326).</li>
+<li><code>limit</code>: Maximum number of features (or NULL for
+all).</li>
+<li><code>bbox</code>: Bounding box for spatial filtering.</li>
+</ul>
+<div id="example-downloading-municipalities" class="section level3">
+<h3>Example: Downloading Municipalities</h3>
+<p>Fetch all municipalities for 2022 at the 1:4,500,000 scale:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>munis <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area</span>(<span class="at">year =</span> <span class="dv">2022</span>, <span class="at">scale =</span> <span class="dv">4500</span>, <span class="at">tessellation =</span> <span class="st">&quot;kunta&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">print</span>(munis)</span></code></pre></div>
+<p>Visualize the municipalities using <code>ggplot2</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">ggplot</span>(munis) <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Finnish Municipalities (2022)&quot;</span>)</span></code></pre></div>
+</div>
+<div id="example-spatial-filtering-with-a-bounding-box" class="section level3">
+<h3>Example: Spatial Filtering with a Bounding Box</h3>
+<p>To retrieve municipalities within a specific area (e.g., southern
+Finland), use the bbox parameter. Coordinates should match the specified
+crs.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>bbox <span class="ot">&lt;-</span> <span class="st">&quot;200000,6600000,500000,6900000&quot;</span>  <span class="co"># In EPSG:3067</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>munis_south <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2022</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">scale =</span> <span class="dv">4500</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">tessellation =</span> <span class="st">&quot;kunta&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">bbox =</span> bbox,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">3067</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>)</span></code></pre></div>
+<p>Visualize the filtered results:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>(munis_south) <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Municipalities in Southern Finland (2022)&quot;</span>)</span></code></pre></div>
+</div>
+<div id="example-fetching-wellbeing-areas" class="section level3">
+<h3>Example: Fetching Wellbeing Areas</h3>
+<p>Retrieve wellbeing areas (hyvinvointialue) for 2022:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>wellbeing <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2022</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">tessellation =</span> <span class="st">&quot;hyvinvointialue&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">scale =</span> <span class="dv">4500</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="step-2-retrieving-population-data-by-administrative-area" class="section level2">
+<h2>Step 2: Retrieving Population Data by Administrative Area</h2>
+<p>The <code>ogc_get_statfi_area_pop()</code> function fetches
+administrative area polygons with associated population data, pivoted
+into a wide format where each population variable is a column.
+Parameters include:</p>
+<ul>
+<li><code>year</code>: The year of the data (2019–2021).</li>
+<li><code>crs</code>: Coordinate reference system (EPSG:3067 or
+EPSG:4326).</li>
+<li><code>limit</code>: Maximum number of features (or <code>NULL</code>
+for all).</li>
+<li><code>bbox</code>: Bounding box for spatial filtering.</li>
+</ul>
+<div id="example-fetching-population-data" class="section level3">
+<h3>Example: Fetching Population Data</h3>
+<p>Retrieve population data for 2021:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>pop_data <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area_pop</span>(<span class="at">year =</span> <span class="dv">2021</span>, <span class="at">crs =</span> <span class="dv">3067</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">print</span>(pop_data)</span></code></pre></div>
+<p>Visualize population density (assuming a variable like
+<code>population_total</code> exists):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggplot</span>(pop_data) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> population_total)) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Population by Administrative Area (2021)&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Population&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="example-population-data-with-bounding-box" class="section level2">
+<h2>Example: Population Data with Bounding Box</h2>
+<p>Fetch population data within a bounding box:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>bbox <span class="ot">&lt;-</span> <span class="st">&quot;200000,6600000,500000,6900000&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>pop_south <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area_pop</span>(<span class="at">year =</span> <span class="dv">2021</span>, <span class="at">bbox =</span> bbox, <span class="at">crs =</span> <span class="dv">3067</span>)</span></code></pre></div>
+</div>
+<div id="step-3-retrieving-population-data-by-statistical-grid" class="section level2">
+<h2>Step 3: Retrieving Population Data by Statistical Grid</h2>
+<p>The <code>ogc_get_statfi_statistical_grid()</code> function retrieves
+population data for statistical grid cells at 1km or 5km resolution.
+Data is returned in EPSG:3067 (ETRS89 / TM35FIN). Parameters
+include:</p>
+<ul>
+<li><code>year</code>: The year of the data (2019–2021).</li>
+<li><code>resolution</code>: Grid cell size (1000m or 5000m).</li>
+<li><code>limit</code>: Maximum number of features (or <code>NULL</code>
+for all).</li>
+<li><code>bbox</code>: Bounding box for spatial filtering.</li>
+</ul>
+<div id="example-fetching-5km-grid-data" class="section level3">
+<h3>Example: Fetching 5km Grid Data</h3>
+<p>Retrieve population data for a 5km grid in 2021:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>grid_data <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_statistical_grid</span>(<span class="at">year =</span> <span class="dv">2021</span>, <span class="at">resolution =</span> <span class="dv">5000</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">print</span>(grid_data)</span></code></pre></div>
+<p>Visualize the grid data:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">ggplot</span>(grid_data) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> population_total), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;magma&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Population by 5km Grid Cells (2021)&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Population&quot;</span>)</span></code></pre></div>
+</div>
+<div id="example-1km-grid-with-bounding-box" class="section level3">
+<h3>Example: 1km Grid with Bounding Box</h3>
+<p>Fetch 1km grid data within a bounding box:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>bbox <span class="ot">&lt;-</span> <span class="st">&quot;200000,6600000,500000,6900000&quot;</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>grid_south <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_statistical_grid</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2021</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">resolution =</span> <span class="dv">1000</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">bbox =</span> bbox</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="advanced-features" class="section level2">
+<h2>Advanced Features</h2>
+<div id="pagination" class="section level3">
+<h3>Pagination</h3>
+<p>When <code>limit = NULL</code>, the
+<code>fetch_ogc_api_statfi()</code> function automatically paginates
+through large datasets, fetching up to 10,000 features per request. This
+ensures all available data is retrieved, even for large administrative
+or grid datasets.</p>
+</div>
+<div id="error-handling" class="section level3">
+<h3>Error Handling</h3>
+<p>The package includes robust error handling:</p>
+<ul>
+<li>Validates inputs (e.g., year, scale, tessellation, CRS, bounding box
+format).</li>
+<li>Provides informative error messages for API failures or invalid
+responses.</li>
+<li>Returns <code>NULL</code> with a warning if no data is retrieved,
+helping users diagnose issues.</li>
+</ul>
+</div>
+<div id="coordinate-reference-systems" class="section level3">
+<h3>Coordinate Reference Systems</h3>
+<p>The functions support two CRS options:</p>
+<ul>
+<li><strong>EPSG:3067</strong> (ETRS89 / TM35FIN): The default for
+Finnish spatial data, suitable for local analyses.</li>
+<li><strong>EPSG:4326</strong> (WGS84): Useful for global compatibility
+or web mapping.</li>
+</ul>
+<p>Note that <code>ogc_get_statfi_statistical_grid()</code> is fixed to
+EPSG:3067, as per the API’s design.</p>
+</div>
+<div id="bounding-box-filtering" class="section level3">
+<h3>Bounding Box Filtering</h3>
+<p>The <code>bbox</code> parameter allows spatial filtering to focus on
+specific regions. Ensure coordinates match the specified
+<code>crs</code> (e.g., EPSG:3067 for grid data). Example format:
+“<code>200000</code>,<code>6600000</code>,<code>500000</code>,<code>6900000</code>”.</p>
+</div>
+</div>
+<div id="best-practices" class="section level2">
+<h2>Best Practices</h2>
+<ul>
+<li><strong>Test with Limits</strong>: For large datasets (e.g., 1km
+grids), start with a small <code>limit</code> or <code>bbox</code> to
+estimate runtime before fetching all features.</li>
+<li><strong>CRS Selection</strong>: Use <code>EPSG:3067</code> for
+Finnish data unless you need <code>EPSG:4326</code> for compatibility
+with other systems.</li>
+<li><em>Check Tessellation Types</em>: Verify valid
+<code>tessellation</code> options (<code>kunta</code>,
+<code>hyvinvointialue</code>, etc.) when using
+<code>ogc_get_statfi_area()</code>.</li>
+<li><em>Inspect Output</em>: Population data from
+<code>ogc_get_statfi_area_pop()</code> and
+<code>ogc_get_statfi_statistical_grid()</code> is pivoted into wide
+format. Check column names to identify available variables.</li>
+</ul>
+</div>
+<div id="additional-resources" class="section level2">
+<h2>Additional Resources</h2>
+<ul>
+<li><a href="https://geo.stat.fi/inspire/">Statistics Finland
+Geoserver</a>: Documentation for the OGC API.</li>
+<li><a href="https://github.com/rOpenGov/geofi">geofi GitHub
+Repository</a>: Source code and issue tracker.</li>
+<li><a href="https://r-spatial.github.io/sf/">sf Package
+Documentation</a>: For working with sf objects.</li>
+<li><a href="https://ggplot2.tidyverse.org/">ggplot2 Documentation</a>:
+For visualizing spatial data.</li>
+</ul>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>The <code>geofi</code> package simplifies access to Statistics
+Finland’s spatial and population data, enabling analyses of
+administrative boundaries, population distributions, and grid-based
+statistics. With no API key required, users can quickly retrieve and
+visualize data using <code>sf</code> and <code>ggplot2</code>. Try the
+examples above to explore Finland’s spatial and demographic
+datasets!</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

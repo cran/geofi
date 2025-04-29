@@ -29,7 +29,7 @@ apiacc_pkginst <- all(apiacc,pkginst)
 ## ----municipality_map, fig.width = 5, eval = apiacc---------------------------
 library(geofi)
 polygon <- get_municipalities(year = 2021, scale = 4500)
-point <- geofi::municipality_central_localities
+point <- geofi::municipality_central_localities()
 # municipality code into integer
 point$municipality_code <- as.integer(point$kuntatunnus)
 
@@ -47,8 +47,8 @@ ggplot() +
 
 ## ----uusimaa, fig.width=8, fig.height=4, eval = apiacc_pkginst----------------
 library(dplyr)
-polygon_uusimaa <- polygon %>% filter(maakunta_name_fi %in% "Uusimaa")
-point_uusimaa <- point %>% filter(municipality_code %in% polygon_uusimaa$municipality_code)
+polygon_uusimaa <- polygon |> filter(maakunta_name_fi %in% "Uusimaa")
+point_uusimaa <- point |> filter(municipality_code %in% polygon_uusimaa$municipality_code)
 ggplot() + 
   theme_light() +
   geom_sf(data = polygon_uusimaa, alpha = .3) + 
@@ -60,24 +60,24 @@ ggplot() +
   theme_light() +
   geom_sf(data = polygon_uusimaa, alpha = .3) + 
   geom_sf(data = point_uusimaa) + 
-  ggrepel::geom_text_repel(data = point_uusimaa %>%
-                        sf::st_set_geometry(NULL) %>%
-                        bind_cols(point_uusimaa %>% 
-                                    sf::st_centroid() %>% 
-                                    sf::st_coordinates() %>% as_tibble()),
+  ggrepel::geom_text_repel(data = point_uusimaa |>
+                        sf::st_set_geometry(NULL) |>
+                        bind_cols(point_uusimaa |> 
+                                    sf::st_centroid() |> 
+                                    sf::st_coordinates() |> as_tibble()),
                      aes(label = teksti, x = X, y = Y))
 
 ## ----create_popdata, eval = apiacc_pkginst------------------------------------
 pop_data <- bind_rows(
   tibble(
     municipality_code = polygon$municipality_code
-  ) %>% 
-    mutate(population = rnorm(n = nrow(.), mean = 2000, sd = 250),
+  ) |> 
+    mutate(population = rnorm(n = nrow(polygon), mean = 2000, sd = 250),
            time = 2020),
   tibble(
     municipality_code = polygon$municipality_code
-  ) %>% 
-    mutate(population = rnorm(n = nrow(.), mean = 2000, sd = 250),
+  ) |> 
+    mutate(population = rnorm(n = nrow(polygon), mean = 2000, sd = 250),
            time = 2021)
   )
 pop_data
@@ -95,7 +95,7 @@ library(patchwork)
 p_municipalities <- ggplot(polygon, aes(fill = municipality_code)) + 
   geom_sf() + 
   theme(legend.position = "top")
-p_regions <- ggplot(polygon %>% count(maakunta_code), aes(fill = maakunta_code)) + 
+p_regions <- ggplot(polygon |> count(maakunta_code), aes(fill = maakunta_code)) + 
   geom_sf() + 
   theme(legend.position = "top")
 p_uusimaa <- ggplot(polygon_uusimaa, aes(fill = municipality_code)) + 
@@ -131,21 +131,21 @@ pal <- leaflet::colorNumeric(palette = "Blues",
 labels <- sprintf(
   "<strong>%s</strong> (%s)",
   point_wgs84$teksti, point_wgs84$kuntatunnus
-) %>% lapply(htmltools::HTML)
+) |> lapply(htmltools::HTML)
 
 # popup for polygons
 popup <- sprintf(
   "<strong>%s</strong> (%s)",
   polygon_wgs84$municipality_name_fi, polygon_wgs84$municipality_code
-) %>% lapply(htmltools::HTML)
+) |> lapply(htmltools::HTML)
 
 EPSG3067 <- leaflet::leafletCRS(crsClass = "L.Proj.CRS",
                                 code = "EPSG:3067", 
                                 proj4def = "+proj=utm +zone=35 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
                                 resolutions = 1.5^(25:15))
 
-leaflet(polygon_wgs84, options = leafletOptions(worldCopyJump = F, crs = EPSG3067)) %>% 
-  addProviderTiles(provider = providers$CartoDB.Positron) %>%
+leaflet(polygon_wgs84, options = leafletOptions(worldCopyJump = F, crs = EPSG3067)) |> 
+  addProviderTiles(provider = providers$CartoDB.Positron) |>
    addPolygons(fillColor = ~pal(municipality_code),
               color = "black",
               weight = 1,
@@ -159,7 +159,7 @@ leaflet(polygon_wgs84, options = leafletOptions(worldCopyJump = F, crs = EPSG306
                 dashArray = "",
                 fillOpacity = 0.4,
                 bringToFront = TRUE)
-  )  %>% 
+  )  |> 
   addMarkers(data = point_wgs84,
               label = labels,
               clusterOptions = markerClusterOptions(),

@@ -30,15 +30,15 @@ apiacc_pkginst <- all(apiacc,pkginst)
 library(geofi)
 library(dplyr)
 d <- data(package = "geofi")
-as_tibble(d$results) %>% 
-  select(Item,Title) %>% 
+as_tibble(d$results) |> 
+  select(Item,Title) |> 
     filter(grepl("municipality_key", Item))
 
 ## ----municipality_key_names, eval = TRUE--------------------------------------
 names(geofi::municipality_key_2023)
 
 ## ----municipality_key_maakunta, eval = pkginst--------------------------------
-geofi::municipality_key_2023 %>% 
+geofi::municipality_key_2023 |> 
   count(maakunta_code,maakunta_name_fi,maakunta_name_sv,maakunta_name_en)
 
 ## ----municipality_map, fig.height = 7, fig.width = 4, eval = apiacc_pkginst----
@@ -46,24 +46,24 @@ municipalities <- get_municipalities(year = 2023, scale = 4500)
 plot(municipalities["municipality_name_fi"], border = NA)
 
 ## ----muni_pop_map1, fig.height = 7, fig.width = 4, eval = apiacc_pkginst------
-get_municipality_pop(year = 2022) %>%  
-  subset(select = miehet_p) %>% 
+get_municipality_pop(year = 2022) |>  
+  subset(select = miehet_p) |> 
   plot()
 
 ## ----muni_pop_map2, fig.height = 7, fig.width = 4, eval = apiacc_pkginst------
-get_municipality_pop(year = 2022) %>%  
-  group_by(hyvinvointialue_name_fi) %>%  
-  summarise(vaesto = sum(vaesto)) %>%  
-  select(vaesto) %>% 
+get_municipality_pop(year = 2022) |>  
+  group_by(hyvinvointialue_name_fi) |>  
+  summarise(vaesto = sum(vaesto)) |>  
+  select(vaesto) |> 
   plot()
 
 ## ----muni_pop_map3, fig.height = 7, fig.width = 4, eval = apiacc_pkginst------
-get_municipality_pop(year = 2022) %>%  
-  dplyr::group_by(hyvinvointialue_name_fi) %>% 
+get_municipality_pop(year = 2022) |>  
+  dplyr::group_by(hyvinvointialue_name_fi) |> 
   summarise(vaesto = sum(vaesto),
-            miehet = sum(miehet)) %>% 
-  mutate(share = miehet/vaesto*100) %>% 
-  select(share) %>% 
+            miehet = sum(miehet)) |> 
+  mutate(share = miehet/vaesto*100) |> 
+  select(share) |> 
   plot()
 
 ## ----zipcode_map, fig.height = 7, fig.width = 4, eval = apiacc_pkginst--------
@@ -79,13 +79,13 @@ pop_grid <- get_population_grid(year = 2018, resolution = 5)
 plot(pop_grid["kunta"], border = NA)
 
 ## ----central_localities, fig.height = 7, fig.width = 4, eval = apiacc_pkginst----
-plot(municipality_central_localities["teksti"])
+plot(municipality_central_localities()["teksti"])
 
 ## ----geofacets, eval = apiacc_pkginst-----------------------------------------
 d <- data(package = "geofi")
-as_tibble(d$results) %>% 
-  select(Item,Title) %>% 
-    filter(grepl("grid", Item)) %>% 
+as_tibble(d$results) |> 
+  select(Item,Title) |> 
+    filter(grepl("grid", Item)) |> 
   print(n = 100)
 
 ## ----geofacet, fig.height = 8, fig.width = 10, eval = apiacc_pkginst----------
@@ -93,12 +93,12 @@ as_tibble(d$results) %>%
 sotkadata <- geofi::sotkadata_population
 
 # lets aggregate population data
-dat <- left_join(geofi::municipality_key_2023 %>% select(-year),
-                 sotkadata) %>% 
-  group_by(maakunta_code, maakunta_name_fi,year) %>% 
-  summarise(population = sum(primary.value, na.rm = TRUE)) %>% 
-  na.omit() %>% 
-  ungroup() %>% 
+dat <- left_join(geofi::municipality_key_2023 |> select(-year),
+                 sotkadata) |> 
+  group_by(maakunta_code, maakunta_name_fi,year) |> 
+  summarise(population = sum(primary.value, na.rm = TRUE)) |> 
+  na.omit() |> 
+  ungroup() |> 
   rename(code = maakunta_code, name = maakunta_name_fi)
 
 library(geofacet)
