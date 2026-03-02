@@ -12,9 +12,9 @@
 
 <meta name="author" content="Markus Kainu" />
 
-<meta name="date" content="2025-04-28" />
+<meta name="date" content="2026-03-02" />
 
-<title>Accessing Spatial and Population Data from Statistics Finland OGC api</title>
+<title>Accessing Data from Statistics Finland OGC api</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -50,8 +50,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -62,7 +63,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -338,10 +339,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Accessing Spatial and Population Data from
-Statistics Finland OGC api</h1>
+<h1 class="title toc-ignore">Accessing Data from Statistics Finland OGC
+api</h1>
 <h4 class="author">Markus Kainu</h4>
-<h4 class="date">2025-04-28</h4>
+<h4 class="date">2026-03-02</h4>
 
 
 
@@ -358,10 +359,8 @@ regions).</li>
 <li>Fetch population data linked to administrative units.</li>
 <li>Access population data for statistical grid cells.</li>
 </ul>
-<p>Unlike some other spatial data APIs, <em>no API key is required</em>
-to access Statistics Finland’s OGC API, making it straightforward to get
-started. The package handles pagination, spatial filtering, and
-coordinate reference system (CRS) transformations, delivering data as
+<p>The package handles pagination, spatial filtering, and coordinate
+reference system (CRS) transformations, delivering data as
 <code>sf</code> objects compatible with the <code>sf</code> package for
 spatial analysis and visualization.</p>
 </div>
@@ -371,17 +370,14 @@ spatial analysis and visualization.</p>
 for accessing Statistics Finland data:</p>
 <ul>
 <li><code>ogc_get_statfi_area()</code>: Retrieves administrative area
-polygons (e.g., municipalities, wellbeing areas) for specified years,
-scales, and tessellation types.</li>
+polygons (e.g., municipalities, wellbeing areas) for specified years and
+scales.</li>
 <li><code>ogc_get_statfi_area_pop()</code>: Fetches administrative area
 polygons with associated population data, pivoted into a wide
 format.</li>
 <li><code>ogc_get_statfi_statistical_grid()</code>: Retrieves population
 data for statistical grid cells at different resolutions (1km or
 5km).</li>
-<li><code>fetch_ogc_api_statfi()</code>: An internal function that
-handles low-level API requests and pagination (not typically called
-directly by users).</li>
 </ul>
 <p>All functions return spatial data as <code>sf</code> objects, making
 it easy to integrate with spatial analysis workflows in R.</p>
@@ -408,10 +404,9 @@ all).</li>
 <div id="example-downloading-municipalities" class="section level3">
 <h3>Example: Downloading Municipalities</h3>
 <p>Fetch all municipalities for 2022 at the 1:4,500,000 scale:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>munis <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area</span>(<span class="at">year =</span> <span class="dv">2022</span>, <span class="at">scale =</span> <span class="dv">4500</span>, <span class="at">tessellation =</span> <span class="st">&quot;kunta&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">print</span>(munis)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>muni <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area</span>(<span class="at">year =</span> <span class="dv">2022</span>, <span class="at">scale =</span> <span class="dv">4500</span>, <span class="at">tessellation =</span> <span class="st">&quot;kunta&quot;</span>)</span></code></pre></div>
 <p>Visualize the municipalities using <code>ggplot2</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">ggplot</span>(munis) <span class="sc">+</span></span>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">ggplot</span>(muni) <span class="sc">+</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Finnish Municipalities (2022)&quot;</span>)</span></code></pre></div>
@@ -419,18 +414,17 @@ all).</li>
 <div id="example-spatial-filtering-with-a-bounding-box" class="section level3">
 <h3>Example: Spatial Filtering with a Bounding Box</h3>
 <p>To retrieve municipalities within a specific area (e.g., southern
-Finland), use the bbox parameter. Coordinates should match the specified
-crs.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>bbox <span class="ot">&lt;-</span> <span class="st">&quot;200000,6600000,500000,6900000&quot;</span>  <span class="co"># In EPSG:3067</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>munis_south <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area</span>(</span>
+Finland), use the bbox parameter.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>bbox_finland_south <span class="ot">&lt;-</span> <span class="st">&quot;18.797607,59.573288,30.476074,61.695082&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>muni_south <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area</span>(</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2022</span>,</span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">scale =</span> <span class="dv">4500</span>,</span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">tessellation =</span> <span class="st">&quot;kunta&quot;</span>,</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">bbox =</span> bbox,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">bbox =</span> bbox_finland_south,</span>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">3067</span></span>
 <span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>)</span></code></pre></div>
 <p>Visualize the filtered results:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>(munis_south) <span class="sc">+</span></span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>(muni_south) <span class="sc">+</span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>() <span class="sc">+</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Municipalities in Southern Finland (2022)&quot;</span>)</span></code></pre></div>
@@ -461,23 +455,33 @@ for all).</li>
 </ul>
 <div id="example-fetching-population-data" class="section level3">
 <h3>Example: Fetching Population Data</h3>
-<p>Retrieve population data for 2021:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>pop_data <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area_pop</span>(<span class="at">year =</span> <span class="dv">2021</span>, <span class="at">crs =</span> <span class="dv">3067</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">print</span>(pop_data)</span></code></pre></div>
-<p>Visualize population density (assuming a variable like
-<code>population_total</code> exists):</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggplot</span>(pop_data) <span class="sc">+</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> population_total)) <span class="sc">+</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Population by Administrative Area (2021)&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Population&quot;</span>)</span></code></pre></div>
+<p>Retrieve population data for 2021.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>pop_data <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area_pop</span>(<span class="at">year =</span> <span class="dv">2021</span>, <span class="at">crs =</span> <span class="dv">3067</span>)</span></code></pre></div>
+<p>By default, function returns the at all regional breakdown available,
+and it is users task to filter out the regional breakdown of interest.
+At the moment, that can be down using regular expressions on the prefix
+of variable <code>areaStatisticalUnit_inspireId_localId</code>.
+Following prefixes are available
+<code>&quot;avi&quot;, &quot;ely&quot;, &quot;kunta&quot;, &quot;maakunta&quot;, &quot;seutukunta&quot;, &quot;suuralue&quot;</code></p>
+<p>Visualize the share of female population at municpality
+(<code>kunta</code>) level.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pop_data <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>         <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">&quot;^kunta&quot;</span>, areaStatisticalUnit_inspireId_localId))) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> female_percentage)) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Population by Administrative Area (2021)&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;share of females (%)&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="example-population-data-with-bounding-box" class="section level2">
 <h2>Example: Population Data with Bounding Box</h2>
 <p>Fetch population data within a bounding box:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>bbox <span class="ot">&lt;-</span> <span class="st">&quot;200000,6600000,500000,6900000&quot;</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>pop_south <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area_pop</span>(<span class="at">year =</span> <span class="dv">2021</span>, <span class="at">bbox =</span> bbox, <span class="at">crs =</span> <span class="dv">3067</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>pop_south <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_area_pop</span>(<span class="at">year =</span> <span class="dv">2021</span>, <span class="at">bbox =</span> bbox_finland_south, <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>pop_south <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">&quot;^kunta&quot;</span>, areaStatisticalUnit_inspireId_localId))) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> female_percentage)) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;plasma&quot;</span>) <span class="sc">+</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Population by Administrative Area (2021)&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;share of females (%)&quot;</span>)</span></code></pre></div>
 </div>
 <div id="step-3-retrieving-population-data-by-statistical-grid" class="section level2">
 <h2>Step 3: Retrieving Population Data by Statistical Grid</h2>
@@ -495,24 +499,29 @@ for all).</li>
 <div id="example-fetching-5km-grid-data" class="section level3">
 <h3>Example: Fetching 5km Grid Data</h3>
 <p>Retrieve population data for a 5km grid in 2021:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>grid_data <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_statistical_grid</span>(<span class="at">year =</span> <span class="dv">2021</span>, <span class="at">resolution =</span> <span class="dv">5000</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">print</span>(grid_data)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>grid_data <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_statistical_grid</span>(<span class="at">year =</span> <span class="dv">2021</span>, <span class="at">resolution =</span> <span class="dv">5000</span>, <span class="at">bbox =</span> bbox_finland_south)</span></code></pre></div>
 <p>Visualize the grid data:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">ggplot</span>(grid_data) <span class="sc">+</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> population_total), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;magma&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> total_count), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;magma&quot;</span>, <span class="at">trans=</span><span class="st">&#39;sqrt&#39;</span>) <span class="sc">+</span></span>
 <span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Population by 5km Grid Cells (2021)&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Population&quot;</span>)</span></code></pre></div>
 </div>
 <div id="example-1km-grid-with-bounding-box" class="section level3">
 <h3>Example: 1km Grid with Bounding Box</h3>
 <p>Fetch 1km grid data within a bounding box:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>bbox <span class="ot">&lt;-</span> <span class="st">&quot;200000,6600000,500000,6900000&quot;</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>grid_south <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_statistical_grid</span>(</span>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>bbox_capital_region <span class="ot">&lt;-</span> <span class="st">&quot;24.441147,60.102168,25.285034,60.369071&quot;</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>grid_capital <span class="ot">&lt;-</span> <span class="fu">ogc_get_statfi_statistical_grid</span>(</span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2021</span>,</span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">resolution =</span> <span class="dv">1000</span>,</span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">bbox =</span> bbox</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">bbox =</span> bbox_capital_region</span>
 <span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>)</span></code></pre></div>
+<p>Visualize the grid data:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">ggplot</span>(grid_capital) <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="fu">aes</span>(<span class="at">fill =</span> total_count), <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>(<span class="at">option =</span> <span class="st">&quot;magma&quot;</span>, <span class="at">trans=</span><span class="st">&#39;sqrt&#39;</span>) <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Population by 1km Grid Cells (2021)&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Population&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="advanced-features" class="section level2">
@@ -552,9 +561,10 @@ EPSG:3067, as per the API’s design.</p>
 <div id="bounding-box-filtering" class="section level3">
 <h3>Bounding Box Filtering</h3>
 <p>The <code>bbox</code> parameter allows spatial filtering to focus on
-specific regions. Ensure coordinates match the specified
-<code>crs</code> (e.g., EPSG:3067 for grid data). Example format:
-“<code>200000</code>,<code>6600000</code>,<code>500000</code>,<code>6900000</code>”.</p>
+specific regions. Bounding box coordinates in EPSG:4326 will work with
+both crs EPSG:4326 and EPSG:3067. Bounding box in EPSG:3067 requires crs
+to be also set to EPSG:3067 with the function argument. Example format:
+<code>&quot;18.797607,59.573288,30.476074,61.695082&quot;</code>.</p>
 </div>
 </div>
 <div id="best-practices" class="section level2">
