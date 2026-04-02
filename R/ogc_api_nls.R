@@ -754,3 +754,4 @@ ogc_get_nimisto <- function(search_string = NULL,
 
   return(all_features)
 }
+
